@@ -1,0 +1,2717 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>Catalogue d'exercices — Volley</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-app: #0E141B;
+    --bg-panel: #16212B;
+    --bg-panel-2: #1D2C38;
+    --court-fill: #1F5C73;
+    --band: #17485A;
+    --court-line: #EFE8D8;
+    --team-a: #4FA8D8;
+    --team-b: #D8536F;
+    --cone: #FF8A3D;
+    --cone-dark: #B4531A;
+    --gold: #E3A939;
+    --ink: #EFE8D8;
+    --ink-dim: #92A3AF;
+    --danger: #E15252;
+    --radius: 10px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent; user-select:none;}
+  html,body{height:100%; margin:0;}
+  input, textarea, select{ user-select:text; -webkit-user-select:text; }
+  body{
+    background: var(--bg-app); color: var(--ink); font-family:'Barlow', sans-serif;
+    display:flex; flex-direction:column; height:100vh; overflow:hidden;
+  }
+  .view{ flex:1; display:flex; flex-direction:column; min-height:0; }
+  .view.hidden{ display:none; }
+  header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 10px 16px; background: var(--bg-panel); border-bottom: 1px solid #24323D; flex-shrink:0; gap:10px;
+  }
+  .title-wrap{ display:flex; align-items:center; gap:10px; min-width:0; }
+  .back-btn{ flex-shrink:0; display:flex; align-items:center; gap:4px; background:transparent; border:1px solid #33465A; color:var(--ink); font-family:'Barlow',sans-serif; font-weight:600; font-size:12px; padding:7px 11px 7px 8px; border-radius:999px; cursor:pointer; }
+
+  /* ---------- Bibliothèque ---------- */
+  .lib-top{ flex-shrink:0; background:var(--bg-panel); border-bottom:1px solid #24323D; padding:12px 16px 10px; }
+  .lib-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+  .lib-title{ font-family:'Oswald',sans-serif; font-weight:600; font-size:20px; letter-spacing:.03em; text-transform:uppercase; }
+  .lib-title small{ font-family:'Barlow',sans-serif; font-size:12px; font-weight:500; color:var(--ink-dim); text-transform:none; letter-spacing:0; margin-left:8px; }
+  .lib-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+  .icon-btn.primary{ background:var(--gold); border-color:var(--gold); color:#1A1204; }
+  .lib-filters{ display:flex; gap:8px; align-items:center; margin-top:10px; }
+  .search{ flex:1; min-width:0; background:var(--bg-panel-2); border:1px solid #33465A; color:var(--ink); font-family:'Barlow',sans-serif; font-size:16px; padding:9px 12px; border-radius:10px; user-select:text; }
+  .search::placeholder{ color:#6E808C; }
+  .sort-select{ background:var(--bg-panel-2); border:1px solid #33465A; color:var(--ink); font-family:'Barlow',sans-serif; font-size:14px; padding:9px 10px; border-radius:10px; }
+  .tag-row{ display:flex; gap:6px; flex-wrap:wrap; margin-top:10px; }
+  .tag-row:empty{ display:none; }
+  .chip{ font-size:12px; font-weight:600; padding:5px 10px; border-radius:999px; background:var(--bg-panel-2); border:1px solid #2C3D4B; color:var(--ink-dim); cursor:pointer; white-space:nowrap; }
+  .chip.on{ background:var(--gold); border-color:var(--gold); color:#1A1204; }
+  .chip.clear{ background:transparent; border-style:dashed; }
+  .lib-body{ flex:1; overflow-y:auto; padding:14px 16px calc(20px + env(safe-area-inset-bottom)); -webkit-overflow-scrolling:touch; }
+  .lib-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:14px; }
+  .card{ background:var(--bg-panel); border:1px solid #24323D; border-radius:12px; overflow:hidden; display:flex; flex-direction:column; cursor:pointer; transition:transform .1s, border-color .15s; }
+  .card:active{ transform:scale(0.98); }
+  .card-thumb{ height:132px; background:#0B1117; display:flex; align-items:center; justify-content:center; padding:8px; }
+  .card-thumb img{ max-width:100%; max-height:100%; border-radius:6px; }
+  .card-body{ padding:10px 12px 12px; display:flex; flex-direction:column; gap:6px; flex:1; }
+  .card-name{ font-family:'Oswald',sans-serif; font-weight:600; font-size:15px; line-height:1.2; letter-spacing:.01em; }
+  .card-name.untitled{ color:var(--ink-dim); font-style:italic; }
+  .card-meta{ font-size:11.5px; color:var(--ink-dim); }
+  .card-tags{ display:flex; gap:4px; flex-wrap:wrap; }
+  .card-tags span{ font-size:10.5px; font-weight:600; padding:2px 7px; border-radius:999px; background:#22313D; color:#B9C6CF; }
+  .card-foot{ display:flex; justify-content:space-between; align-items:flex-end; gap:6px; margin-top:auto; }
+  .card-more{ flex-shrink:0; width:34px; height:30px; border-radius:8px; background:var(--bg-panel-2); border:1px solid #2C3D4B; color:var(--ink); font-size:18px; line-height:1; cursor:pointer; }
+  .lib-empty{ text-align:center; color:var(--ink-dim); padding:60px 20px; font-size:14px; line-height:1.5; }
+  .lib-empty strong{ display:block; color:var(--ink); font-family:'Oswald',sans-serif; font-size:18px; font-weight:600; margin-bottom:6px; text-transform:uppercase; letter-spacing:.02em; }
+  .sheet-btn{ display:block; width:100%; text-align:left; font-family:'Barlow',sans-serif; font-weight:600; font-size:15px; padding:12px 14px; border-radius:10px; border:1px solid #2C3D4B; background:var(--bg-panel-2); color:var(--ink); margin-bottom:8px; cursor:pointer; }
+  .sheet-btn.danger{ color:var(--danger); }
+  .lib-count{ font-size:12.5px; color:var(--ink-dim); font-weight:600; white-space:nowrap; }
+  #libraryView .lib-head .pill-toggle button{ font-size:13px; padding:8px 14px; }
+  /* ---------- Séance ---------- */
+  .se-form{ display:grid; grid-template-columns: 170px 1fr 1fr; gap:4px 12px; margin-bottom:10px; }
+  .se-field{ display:block; }
+  .se-field.wide{ grid-column: 1 / -1; }
+  .se-field .modal-input, .se-field .modal-textarea{ margin-bottom:8px; }
+  .se-field .modal-textarea{ min-height:54px; }
+  .se-item{ display:flex; gap:12px; background:var(--bg-panel); border:1px solid #24323D; border-radius:12px; padding:10px; margin-bottom:10px; }
+  #seItems{ position:relative; }
+  .se-item{ transition: transform .16s ease; }
+  .se-item.dragging{ transition:none; position:relative; z-index:5; border-color:var(--gold); box-shadow:0 14px 30px -10px rgba(0,0,0,.7); }
+  .se-handle{ flex-shrink:0; width:34px; margin:-10px 0 -10px -10px; border-radius:12px 0 0 12px; display:flex; align-items:center; justify-content:center; color:#6E808C; cursor:grab; touch-action:none; background:#1A2732; border-right:1px solid #24323D; }
+  .se-handle:active, .se-item.dragging .se-handle{ color:var(--gold); cursor:grabbing; }
+  .se-num{ flex-shrink:0; width:26px; height:26px; border-radius:50%; background:var(--gold); color:#1A1204; font-family:'Oswald',sans-serif; font-weight:600; font-size:14px; display:flex; align-items:center; justify-content:center; }
+  .se-thumb{ flex-shrink:0; width:210px; background:#0B1117; border-radius:8px; display:flex; align-items:center; justify-content:center; padding:6px; cursor:pointer; }
+  .se-thumb img{ max-width:100%; max-height:120px; border-radius:4px; }
+  .se-main{ flex:1; min-width:0; display:flex; flex-direction:column; gap:5px; }
+  .se-name{ font-family:'Oswald',sans-serif; font-weight:600; font-size:16px; line-height:1.2; }
+  .se-expl{ font-size:12.5px; color:var(--ink-dim); line-height:1.35; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; white-space:pre-line; }
+  .se-crit{ font-size:12.5px; color:#C9D4DB; }
+  .se-crit b{ color:var(--gold); font-weight:600; }
+  .se-res{ display:flex; align-items:center; gap:8px; margin-top:auto; }
+  .se-res .modal-input{ margin:0; padding:7px 10px; font-size:15px; }
+  .se-actions{ flex-shrink:0; display:flex; flex-direction:column; gap:6px; }
+  .mini-btn{ min-width:40px; height:34px; border-radius:8px; background:var(--bg-panel-2); border:1px solid #2C3D4B; color:var(--ink); font-family:'Barlow',sans-serif; font-weight:600; font-size:13px; cursor:pointer; padding:0 10px; }
+  .mini-btn:disabled{ opacity:.3; }
+  .se-card-thumb{ height:96px; }
+  /* ---------- Sélection d'exercices ---------- */
+  .modal-card.picker{ max-width:640px; max-height:88vh; display:flex; flex-direction:column; }
+  .modal-card.picker .search{ flex:none; margin-bottom:6px; }
+  .pick-list{ flex:1; overflow-y:auto; margin:10px 0 14px; display:flex; flex-direction:column; gap:6px; min-height:120px; }
+  .pick-row{ display:flex; align-items:center; gap:10px; padding:6px 8px; border-radius:10px; border:1px solid #2C3D4B; background:var(--bg-panel-2); cursor:pointer; }
+  .pick-row.on{ border-color:var(--gold); box-shadow: inset 0 0 0 1px var(--gold); }
+  .pick-row img{ width:96px; height:52px; object-fit:contain; background:#0B1117; border-radius:5px; flex-shrink:0; }
+  .pick-row .pick-name{ flex:1; font-weight:600; font-size:14px; }
+  .pick-row .pick-order{ width:26px; height:26px; border-radius:50%; border:2px solid #33465A; display:flex; align-items:center; justify-content:center; font-family:'Oswald',sans-serif; font-size:13px; flex-shrink:0; }
+  .pick-row.on .pick-order{ background:var(--gold); border-color:var(--gold); color:#1A1204; }
+  @media (max-width: 760px){
+    .se-form{ grid-template-columns: 1fr 1fr; }
+    .se-thumb{ width:150px; }
+  }
+  /* ---------- Feuille imprimée (séance) ---------- */
+  #printSheet{ display:none; }
+  .toast{ position:fixed; left:50%; bottom:calc(24px + env(safe-area-inset-bottom)); transform:translateX(-50%) translateY(20px); background:#22313D; border:1px solid #33465A; color:var(--ink); font-size:13.5px; font-weight:600; padding:10px 16px; border-radius:999px; opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; z-index:60; max-width:90vw; text-align:center; }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+  .title{ font-family:'Oswald', sans-serif; font-weight:600; letter-spacing:0.03em; font-size: 16px; text-transform: uppercase; }
+  .title small{ display:block; font-family:'Barlow', sans-serif; text-transform:none; letter-spacing:0; font-weight:400; color: var(--ink-dim); font-size: 11px; margin-top:2px; }
+  .header-right{ display:flex; align-items:center; gap:8px; overflow-x:auto; }
+  .pill-toggle{ display:flex; background: var(--bg-panel-2); border-radius: 999px; padding:3px; gap:2px; flex-shrink:0; }
+  .pill-toggle button{ border:none; background:transparent; color:var(--ink-dim); font-family:'Barlow', sans-serif; font-weight:600; font-size:12px; padding:7px 12px; border-radius:999px; cursor:pointer; transition: background .15s, color .15s; white-space:nowrap; }
+  .pill-toggle button.active{ background: var(--gold); color:#1A1204; }
+  .icon-btn{ flex-shrink:0; display:flex; align-items:center; gap:6px; background: var(--bg-panel-2); border:1px solid #263543; color:var(--ink); font-family:'Barlow', sans-serif; font-weight:600; font-size:12px; padding:8px 12px; border-radius:999px; cursor:pointer; white-space:nowrap; }
+  .icon-btn:active{ transform: scale(0.96); }
+  .icon-btn.on{ background: var(--gold); border-color: var(--gold); color:#1A1204; }
+
+  .tabrow{ display:flex; gap:6px; align-items:center; padding: 8px 12px; background: var(--bg-panel); overflow-x:auto; flex-shrink:0; border-bottom:1px solid #1B2731; }
+  .tabrow.evo{ background:#131C24; padding-top:6px; padding-bottom:6px; }
+  .tab{ flex-shrink:0; display:flex; align-items:center; gap:6px; padding:7px 12px; border-radius:8px; background:var(--bg-panel-2); border:1px solid #263543; font-size:12.5px; font-weight:600; color:var(--ink-dim); cursor:pointer; white-space:nowrap; }
+  .tab.evo-tab{ font-size:11.5px; padding:5px 10px; background:transparent; border-color:#22303B; }
+  .tab.active{ color:#1A1204; background: var(--gold); border-color: var(--gold); }
+  .tab .x{ opacity:.6; font-weight:700; padding-left:2px; }
+  .tab .x:hover{ opacity:1; }
+  .tab-add{ flex-shrink:0; width:30px; height:30px; border-radius:8px; background:transparent; border:1px dashed #33465A; color:var(--ink-dim); font-size:16px; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+  .tab-add.evo{ width:26px; height:26px; font-size:14px; }
+
+  main{ flex:1; display:flex; align-items:center; justify-content:center; padding: 10px; min-height:0; position:relative; }
+  #courtSvg{ max-width:100%; max-height:100%; touch-action:none; border-radius: 14px; box-shadow: 0 0 0 1px #24323D, 0 20px 40px -20px rgba(0,0,0,.6); }
+  .print-title{ display:none; }
+
+  .hint{ position:absolute; bottom:16px; left:50%; transform:translateX(-50%); background: rgba(22,33,43,.92); border:1px solid #24323D; color: var(--ink-dim); font-size:12px; padding:7px 14px; border-radius:999px; pointer-events:none; opacity:0; transition:opacity .2s; white-space:nowrap; }
+  .hint.show{ opacity:1; }
+
+  footer{ flex-shrink:0; background: var(--bg-panel); border-top: 1px solid #24323D; padding: 9px 10px calc(9px + env(safe-area-inset-bottom)); display:flex; gap:7px; overflow-x:auto; }
+  .tool{ flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:4px; background: var(--bg-panel-2); border: 1px solid #263543; border-radius: var(--radius); padding: 8px 10px 7px; cursor:pointer; min-width: 58px; transition: border-color .15s, transform .1s; }
+  .tool:active{ transform: scale(0.95); }
+  .tool.active{ border-color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); }
+  .tool .icon{ width:24px; height:24px; display:flex; align-items:center; justify-content:center; }
+  .tool .lbl{ font-size:9.5px; color:var(--ink-dim); font-weight:600; text-align:center; line-height:1.15; }
+  .tool.active .lbl{ color: var(--gold); }
+  .sep{ width:1px; background:#263543; flex-shrink:0; margin: 4px 3px; }
+  .tool.danger .lbl{ color: var(--danger); }
+  .tool.disabled{ opacity:.35; pointer-events:none; }
+
+  .el-player text{ font-family:'Oswald', sans-serif; font-weight:600; fill:#0E141B; font-size:15px; pointer-events:none; }
+  .curve-handle{ fill: var(--gold); stroke:#1A1204; stroke-width:1.5; cursor:grab; display:none; }
+  .is-selected .curve-handle{ display:inline; }
+  .zone-label{ font-family:'Oswald', sans-serif; font-weight:600; font-size:13px; text-transform:uppercase; letter-spacing:.02em; pointer-events:none; }
+  .is-selected{ filter: drop-shadow(0 0 0 var(--gold)); }
+  .selected-ring{ fill:none; stroke:var(--gold); stroke-width:2.5; stroke-dasharray:4 3; }
+  .ghost{ opacity:.55; pointer-events:none; }
+
+  .modal-overlay{ position:fixed; inset:0; background:rgba(6,10,14,.6); display:none; align-items:center; justify-content:center; z-index:50; padding:24px; }
+  .modal-overlay.show{ display:flex; }
+  .modal-card{ background: var(--bg-panel); border:1px solid #263543; border-radius: 14px; padding:18px; width:100%; max-width:380px; box-shadow: 0 20px 50px -15px rgba(0,0,0,.7); }
+  .modal-title{ font-family:'Oswald', sans-serif; font-weight:600; font-size:15px; text-transform:uppercase; letter-spacing:.02em; margin:0 0 8px; }
+  .modal-message{ font-size:13.5px; color:var(--ink-dim); line-height:1.4; margin:0 0 14px; }
+  .modal-input{ width:100%; background:var(--bg-panel-2); border:1px solid #33465A; color:var(--ink); font-family:'Barlow',sans-serif; font-size:16px; padding:10px 12px; border-radius:8px; margin-bottom:16px; }
+  .modal-textarea{ width:100%; background:var(--bg-panel-2); border:1px solid #33465A; color:var(--ink); font-family:'Barlow',sans-serif; font-size:15px; padding:10px 12px; border-radius:8px; margin-bottom:16px; resize:vertical; min-height:110px; }
+  .modal-swatches{ display:none; flex-wrap:wrap; gap:9px; margin: -4px 0 16px; }
+  .modal-swatches .swatch{ width:32px; height:32px; border-radius:50%; border:2px solid transparent; padding:0; cursor:pointer; }
+  .modal-swatches .swatch.active{ border-color:#fff; box-shadow: 0 0 0 2px var(--bg-panel), 0 0 0 4px var(--gold); }
+  .modal-actions{ display:flex; gap:8px; justify-content:flex-end; }
+  .modal-card.wide{ max-width:460px; max-height:90vh; overflow-y:auto; }
+  .field-label{ display:block; font-size:11.5px; font-weight:600; color:var(--ink-dim); text-transform:uppercase; letter-spacing:.04em; margin:0 0 5px; }
+  .field-help{ font-size:11.5px; color:var(--ink-dim); margin:-12px 0 14px; }
+  .modal-card.wide .modal-input{ margin-bottom:14px; }
+  .modal-card.wide .modal-textarea{ margin-bottom:14px; min-height:90px; }
+  .modal-btn{ font-family:'Barlow',sans-serif; font-weight:600; font-size:13px; padding:9px 16px; border-radius:8px; border:1px solid #33465A; background:transparent; color:var(--ink-dim); cursor:pointer; }
+  .modal-btn.confirm{ background:var(--gold); border-color:var(--gold); color:#1A1204; }
+  .modal-btn.confirm.danger{ background:var(--danger); border-color:var(--danger); color:#fff; }
+
+  @page{ size: A4; margin: 10mm; }
+  @media print{
+    body.print-seance > *:not(#printSheet){ display:none !important; }
+    body.print-seance #printSheet{ display:block; }
+    #printSheet{ font-family: Arial, Helvetica, sans-serif; color:#000; font-size:10pt; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    #printSheet .ps-ttl{ font-family:'Oswald','Arial Narrow',Arial,sans-serif; font-weight:600; text-transform:uppercase; letter-spacing:.02em; }
+    .ps-top{ display:flex; justify-content:space-between; align-items:flex-end; gap:6mm; border-bottom:2.4pt solid #000; padding-bottom:2.6mm; }
+    .ps-kicker, .ps-lab{ font-size:7.5pt; font-weight:bold; letter-spacing:.16em; text-transform:uppercase; color:#555; }
+    .ps-title{ font-size:19pt; line-height:1.1; margin-top:.6mm; }
+    .ps-theme{ font-size:12pt; margin-top:1.2mm; }
+    .ps-theme span{ color:#555; }
+    .ps-right{ text-align:right; flex-shrink:0; }
+    .ps-pill{ display:inline-block; border:1.2pt solid #000; border-radius:20pt; padding:1mm 3.6mm; font-weight:bold; font-size:10pt; }
+    .ps-count{ font-size:8.5pt; color:#555; margin-top:1.6mm; }
+    .ps-rem{ margin-top:3.2mm; background:#EFEFEF; border-left:2.4pt solid #000; padding:2mm 3mm; white-space:pre-wrap; font-size:9.5pt; line-height:1.35; }
+    .ps-prog{ margin-top:3mm; font-size:9pt; line-height:1.5; }
+    .ps-prog b{ font-weight:bold; }
+    .ps-prog .ps-sep{ color:#999; padding:0 2mm; }
+    .ps-block{ border-top:0.8pt solid #9A9A9A; padding-top:3.4mm; margin-top:3.6mm; break-inside:avoid; page-break-inside:avoid; }
+    .ps-bhead{ display:flex; align-items:center; gap:3mm; margin-bottom:2.6mm; }
+    .ps-num{ flex-shrink:0; width:7.2mm; height:7.2mm; border-radius:50%; background:#000; color:#fff; display:flex; align-items:center; justify-content:center; font-size:11pt; }
+    .ps-bname{ flex:1; font-size:12.5pt; line-height:1.15; }
+    .ps-tags{ font-size:8pt; color:#555; text-align:right; max-width:45%; }
+    .ps-bbody{ display:flex; gap:5mm; }
+    .ps-court{ width:40%; flex-shrink:0; border:0.8pt solid #000; border-radius:2mm; padding:1.6mm; display:flex; align-items:center; justify-content:center; align-self:flex-start; }
+    .ps-court img{ max-width:100%; max-height:56mm; display:block; }
+    .ps-txt{ flex:1; display:flex; flex-direction:column; gap:2.6mm; min-width:0; }
+    .ps-expl{ white-space:pre-wrap; line-height:1.36; font-size:9.5pt; margin-top:.8mm; }
+    .ps-eval{ display:flex; border:0.8pt solid #000; border-radius:2mm; margin-top:auto; font-size:9.5pt; }
+    .ps-eval > div{ padding:1.6mm 2.6mm 2mm; }
+    .ps-eval .crit{ flex:1.6; border-right:0.8pt solid #000; }
+    .ps-eval .res{ flex:1; }
+    .ps-eval .val{ margin-top:.8mm; min-height:4.6mm; }
+    .ps-write{ border-bottom:0.8pt dotted #000; height:5mm; }
+    body{ background:#fff; color:#000; height:auto; overflow:visible; }
+    header, footer, .tabrow, .hint, .modal-overlay{ display:none !important; }
+    main{ padding:0; height:auto; display:block; }
+    #courtSvg{ box-shadow:none; border-radius:0; max-width:100%; max-height:none; width:100%; }
+    .print-title{ display:block; font-family:'Oswald',sans-serif; font-weight:600; font-size:16px; margin:0 0 8px; color:#000; }
+    .curve-handle{ display:none; }
+    .el-zone [data-role="main"]{ fill:#ffffff !important; fill-opacity:.08 !important; stroke:#000000 !important; }
+    .el-zone .zone-label{ fill:#000000 !important; }
+    :root{
+      --court-fill:#ffffff; --band:#F2F2F2; --court-line:#000000; --gold:#000000; --ink:#000000;
+      --team-a:#ffffff; --team-b:#000000; --cone:#ffffff; --cone-dark:#ffffff;
+    }
+    #courtSvg [filter]{ filter:none; }
+    .el-player.team-b text{ fill:#ffffff; }
+  }
+</style>
+</head>
+<body>
+
+<div class="view" id="libraryView">
+  <div class="lib-top">
+    <div class="lib-head">
+      <div class="title-wrap">
+        <div class="pill-toggle">
+          <button id="tabEx" class="active">Exercices</button>
+          <button id="tabSe">Séances</button>
+        </div>
+        <div class="lib-count" id="libCount"></div>
+      </div>
+      <div class="lib-actions">
+        <button class="icon-btn primary" id="libNew">+ Nouvel exercice</button>
+        <button class="icon-btn primary" id="libNewSe" style="display:none">+ Nouvelle séance</button>
+        <button class="icon-btn" id="libImport">Importer .json</button>
+        <button class="icon-btn" id="libBackup">Sauvegarder tout</button>
+        <input type="file" id="libFile" accept="application/json,.json" multiple style="display:none">
+      </div>
+    </div>
+    <div id="exFilters">
+    <div class="lib-filters">
+      <input class="search" id="libSearch" type="search" placeholder="Rechercher un exercice, un mot, un tag…" autocomplete="off">
+      <select class="sort-select" id="libSort">
+        <option value="recent">Modifiés récemment</option>
+        <option value="az">Nom A → Z</option>
+      </select>
+    </div>
+    <div class="tag-row" id="libTags"></div>
+    </div>
+  </div>
+  <div class="lib-body">
+    <div class="lib-grid" id="libGrid"></div>
+    <div class="lib-grid" id="seGrid" style="display:none"></div>
+    <div class="lib-empty" id="libEmpty" style="display:none"></div>
+  </div>
+</div>
+
+<div class="view hidden" id="editorView">
+<header>
+  <div class="title-wrap">
+    <button class="back-btn" id="btnBack"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="btnBackLabel">Bibliothèque</span></button>
+    <div class="title"><span id="exTitle">Nouvel exercice</span><small>Enregistré automatiquement dans la bibliothèque</small></div>
+  </div>
+  <div class="header-right">
+    <div class="pill-toggle">
+      <button id="btnFull" class="active">Terrain complet</button>
+      <button id="btnHalf">Demi-terrain</button>
+    </div>
+    <button class="icon-btn" id="btnSplit" title="Ligne au milieu du terrain, pour deux groupes en parallèle"><svg width="18" height="16" viewBox="0 0 18 16" fill="none"><rect x="1" y="1" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><line x1="9" y1="1" x2="9" y2="15" stroke="currentColor" stroke-width="1.6" stroke-dasharray="2.2 1.8"/></svg>Diviser en 2</button>
+    <button class="icon-btn" id="btnFiche">Fiche</button>
+    <button class="icon-btn" id="btnDesc">Note de phase</button>
+    <button class="icon-btn" id="btnNew">Nouveau</button>
+    <button class="icon-btn" id="btnPrint">Imprimer</button>
+    <button class="icon-btn" id="btnExportPng">Exporter image</button>
+    <button class="icon-btn" id="btnExportJson">Exporter .json</button>
+  </div>
+</header>
+
+<div class="tabrow" id="phaseTabs"></div>
+<div class="tabrow evo" id="evoTabs"></div>
+
+<main>
+  <svg id="courtSvg" xmlns="http://www.w3.org/2000/svg"></svg>
+  <div class="hint" id="hint"></div>
+</main>
+
+<footer id="toolbar"></footer>
+</div>
+
+<div class="view hidden" id="seanceView">
+  <header>
+    <div class="title-wrap">
+      <button class="back-btn" id="seBack"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Séances</button>
+      <div class="title"><span id="seTitle">Séance</span><small>Enregistrée automatiquement</small></div>
+    </div>
+    <div class="header-right">
+      <button class="icon-btn primary" id="seAdd">+ Ajouter des exercices</button>
+      <button class="icon-btn" id="sePrint">Imprimer / PDF</button>
+    </div>
+  </header>
+  <div class="lib-body">
+    <div class="se-form">
+      <label class="se-field"><span class="field-label">Date</span><input class="modal-input" type="date" id="seDate"></label>
+      <label class="se-field"><span class="field-label">Catégorie</span><input class="modal-input" id="seCat" list="seCatList" placeholder="Ex. P4 Dames"></label>
+      <label class="se-field"><span class="field-label">Thème</span><input class="modal-input" id="seTheme" placeholder="Ex. Réception"></label>
+      <label class="se-field wide"><span class="field-label">Info / remarque</span><textarea class="modal-textarea" id="seRem" rows="2" placeholder="Absentes, matériel, point d'attention…"></textarea></label>
+      <datalist id="seCatList"></datalist>
+    </div>
+    <div id="seItems"></div>
+    <div class="lib-empty" id="seEmpty" style="display:none"><strong>Séance vide</strong>Ajoute des exercices depuis ta bibliothèque. Ce sont des copies : tu peux les adapter pour cette séance sans toucher à l'original.</div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="pickerOverlay">
+  <div class="modal-card picker">
+    <div class="modal-title">Ajouter des exercices</div>
+    <input class="search" id="pickSearch" type="search" placeholder="Rechercher…" autocomplete="off">
+    <div class="tag-row" id="pickTags"></div>
+    <div class="pick-list" id="pickList"></div>
+    <div class="modal-actions">
+      <button class="modal-btn" id="pickCancel">Annuler</button>
+      <button class="modal-btn confirm" id="pickConfirm">Ajouter</button>
+    </div>
+  </div>
+</div>
+
+<div id="printSheet"></div>
+
+<div class="modal-overlay" id="sheetOverlay">
+  <div class="modal-card">
+    <div class="modal-title" id="sheetTitle"></div>
+    <div id="sheetButtons" style="margin-top:12px"></div>
+    <div class="modal-actions"><button class="modal-btn" id="sheetCancel">Fermer</button></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-card">
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-message" id="modalMessage"></div>
+    <input class="modal-input" id="modalInput" type="text" inputmode="text">
+    <textarea class="modal-textarea" id="modalTextarea" rows="5" placeholder="Précision propre à cette phase (facultatif)..."></textarea>
+    <div class="modal-swatches" id="modalSwatches"></div>
+    <div class="modal-actions">
+      <button class="modal-btn" id="modalCancel">Annuler</button>
+      <button class="modal-btn confirm" id="modalConfirm">OK</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="ficheOverlay">
+  <div class="modal-card wide">
+    <div class="modal-title">Fiche de l'exercice</div>
+    <label class="field-label" for="ficheNom">Nom</label>
+    <input class="modal-input" id="ficheNom" type="text" placeholder="Ex. Manchette en binôme vers la cible">
+    <label class="field-label" for="ficheExpl">Explication</label>
+    <textarea class="modal-textarea" id="ficheExpl" rows="5" placeholder="Mise en place, déroulement, consignes..."></textarea>
+    <label class="field-label" for="ficheReussite">Critère de réussite</label>
+    <input class="modal-input" id="ficheReussite" type="text" placeholder="Ex. 8 réceptions sur 10 vers la cible">
+    <label class="field-label" for="ficheTags">Tags</label>
+    <input class="modal-input" id="ficheTags" type="text" placeholder="Ex. manchette, binôme, échauffement">
+    <div class="field-help">Sépare les tags par des virgules.</div>
+    <div class="modal-actions">
+      <button class="modal-btn" id="ficheCancel">Annuler</button>
+      <button class="modal-btn confirm" id="ficheSave">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = document.getElementById('courtSvg');
+  const hintEl = document.getElementById('hint');
+  const toolbar = document.getElementById('toolbar');
+  const btnFull = document.getElementById('btnFull');
+  const btnHalf = document.getElementById('btnHalf');
+  const btnSplit = document.getElementById('btnSplit');
+  const btnPrint = document.getElementById('btnPrint');
+  const btnDesc = document.getElementById('btnDesc');
+  const btnExportPng = document.getElementById('btnExportPng');
+  const btnExportJson = document.getElementById('btnExportJson');
+  const phaseTabsEl = document.getElementById('phaseTabs');
+  const evoTabsEl = document.getElementById('evoTabs');
+  const modalOverlay = document.getElementById('modalOverlay');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalMessage = document.getElementById('modalMessage');
+  const modalInput = document.getElementById('modalInput');
+  const modalTextarea = document.getElementById('modalTextarea');
+  const modalSwatches = document.getElementById('modalSwatches');
+  const modalCancel = document.getElementById('modalCancel');
+  const modalConfirm = document.getElementById('modalConfirm');
+  const exTitle = document.getElementById('exTitle');
+  const btnFiche = document.getElementById('btnFiche');
+  const btnNew = document.getElementById('btnNew');
+  const ficheOverlay = document.getElementById('ficheOverlay');
+  const ficheNom = document.getElementById('ficheNom');
+  const ficheExpl = document.getElementById('ficheExpl');
+  const ficheReussite = document.getElementById('ficheReussite');
+  const ficheTags = document.getElementById('ficheTags');
+
+  // ---------- Popup interne (remplace prompt/confirm natifs, peu fiables en aperçu embarqué) ----------
+  let modalOnConfirm = null;
+  let modalType = 'confirm';
+  function openModal({ title, message, type, value, confirmLabel, danger, palette, paletteValue }){
+    modalType = type || 'confirm';
+    modalTitle.textContent = title || '';
+    modalMessage.textContent = message || '';
+    modalMessage.style.display = message ? 'block' : 'none';
+    modalInput.style.display = modalType === 'input' ? 'block' : 'none';
+    modalTextarea.style.display = modalType === 'textarea' ? 'block' : 'none';
+    modalInput.value = modalType === 'input' ? (value || '') : '';
+    modalTextarea.value = modalType === 'textarea' ? (value || '') : '';
+    modalConfirm.textContent = confirmLabel || 'OK';
+    modalConfirm.classList.toggle('danger', !!danger);
+
+    modalSwatches.innerHTML = '';
+    let selectedColor = palette ? (paletteValue || palette[0]) : null;
+    modalSwatches.style.display = palette ? 'flex' : 'none';
+    if(palette){
+      palette.forEach(c => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'swatch' + (c === selectedColor ? ' active' : '');
+        b.style.background = c;
+        b.addEventListener('click', () => {
+          selectedColor = c;
+          [...modalSwatches.children].forEach(ch => ch.classList.remove('active'));
+          b.classList.add('active');
+        });
+        modalSwatches.appendChild(b);
+      });
+    }
+
+    modalOverlay.classList.add('show');
+    if(modalType === 'input') setTimeout(() => { modalInput.focus(); modalInput.select(); }, 30);
+    if(modalType === 'textarea') setTimeout(() => { modalTextarea.focus(); }, 30);
+    return new Promise((resolve) => {
+      modalOnConfirm = (val) => {
+        modalOverlay.classList.remove('show');
+        modalOnConfirm = null;
+        if(val === false){ resolve(false); return; }
+        resolve(palette ? { text: val, color: selectedColor } : val);
+      };
+    });
+  }
+  function closeModalCancelled(){ if(modalOnConfirm) modalOnConfirm(false); else modalOverlay.classList.remove('show'); }
+  modalCancel.addEventListener('click', closeModalCancelled);
+  modalOverlay.addEventListener('click', (e) => { if(e.target === modalOverlay) closeModalCancelled(); });
+  modalConfirm.addEventListener('click', () => {
+    if(!modalOnConfirm) return;
+    let val = true;
+    if(modalType === 'input') val = modalInput.value;
+    else if(modalType === 'textarea') val = modalTextarea.value;
+    modalOnConfirm(val);
+  });
+  modalInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') modalConfirm.click(); });
+
+  const SCALE = 42;
+  const FULL_W = 18 * SCALE, FULL_H = 9 * SCALE;
+  const HALF_W = 9 * SCALE, HALF_H = 9 * SCALE;
+  const BAND = 3 * SCALE; // demi-terrain : on montre aussi les 3 m du côté opposé, au-dessus du filet
+  const ZONE_COLORS = ['#E3A939', '#4FA8D8', '#D8536F', '#3EA66B', '#B23AE0', '#EFE8D8'];
+  const DEFAULT_ZONE_COLOR = ZONE_COLORS[0];
+
+  let activeTool = 'select';
+  let selectedId = null;
+  let pendingLine = null; // {kind, x1, y1} — outils à 2 taps (flèches, courbe, zone ovale)
+  let pendingQuad = null; // {points:[...]} — zone à 4 coins
+  let idSeq = 1;
+  let staticLayer, zoneLayer, elLayer, tempLayer;
+  let elements = []; // live: {id, type, x, y, x1,y1,x2, y2, cx, cy, points, num, label, color, el}
+
+  function centroid(points){
+    const n = points.length;
+    return { x: points.reduce((s,p)=>s+p.x,0)/n, y: points.reduce((s,p)=>s+p.y,0)/n };
+  }
+
+  // ---------- Data model: phases > evolutions > slot(mode, elements, counters) ----------
+  // side : côté du terrain complet conservé lors du passage en demi-terrain ('left' | 'right')
+  // split : ligne de partage au milieu du terrain (deux groupes en parallèle)
+  function newSlot(mode){ return { mode: mode || 'full', side: 'left', split: false, elements: [], counters: { 'player-a':1, 'player-b':1 }, history: [] }; }
+  function cloneSlotData(slot){
+    return { mode: slot.mode, side: slot.side || 'left', split: !!slot.split, elements: JSON.parse(JSON.stringify(slot.elements)), counters: {...slot.counters}, history: [] };
+  }
+  function emptyFiche(){ return { nom:'', explication:'', reussite:'', tags:[] }; }
+  let fiche = emptyFiche();
+  function newPhase(n, cloneFromSlot){
+    return { id:'p'+n, label:'Phase '+n, description:'', evolutions:[ { id:'e1', label:'Base', slot: cloneFromSlot ? cloneSlotData(cloneFromSlot) : newSlot('full') } ] };
+  }
+
+  let phases = [ newPhase(1) ];
+  let curPhase = 0, curEvo = 0;
+
+  function currentSlot(){ return phases[curPhase].evolutions[curEvo].slot; }
+
+  // ---------- Canvas <-> data ----------
+  function toSvgPoint(clientX, clientY){
+    const pt = svg.createSVGPoint();
+    pt.x = clientX; pt.y = clientY;
+    return pt.matrixTransform(svg.getScreenCTM().inverse());
+  }
+
+  function serializeElements(){
+    return elements.map(e => ({
+      type:e.type, x:e.x, y:e.y, x1:e.x1, y1:e.y1, x2:e.x2, y2:e.y2, cx:e.cx, cy:e.cy,
+      num:e.num, label:e.label, color:e.color,
+      points: e.points ? e.points.map(p => ({x:p.x, y:p.y})) : undefined
+    }));
+  }
+
+  function pushHistory(){
+    const slot = currentSlot();
+    slot.history.push(JSON.stringify({ mode: slot.mode, side: slot.side, split: !!slot.split, counters: {...slot.counters}, elements: serializeElements() }));
+    if(slot.history.length > 25) slot.history.shift();
+    updateUndoState();
+  }
+
+  function undo(){
+    const slot = currentSlot();
+    if(!slot.history.length) return;
+    const prev = JSON.parse(slot.history.pop());
+    slot.counters = prev.counters || slot.counters;
+    const shellChanged = (prev.mode && prev.mode !== slot.mode) || (!!prev.split !== !!slot.split);
+    if(prev.mode) slot.mode = prev.mode;
+    slot.side = prev.side || slot.side;
+    slot.split = !!prev.split;
+    if(shellChanged){ buildSvgShell(slot.mode); syncModeButtons(); }
+    loadElements(prev.elements || [], slot.counters);
+    deselect();
+    updateUndoState();
+  }
+
+  function updateUndoState(){
+    const btn = toolbar.querySelector('[data-tool="undo"]');
+    if(btn) btn.classList.toggle('disabled', currentSlot().history.length === 0);
+  }
+
+  // ---------- Court shell ----------
+  function buildSvgShell(mode){
+    svg.innerHTML = '';
+    const w = mode==='full'?FULL_W:HALF_W, h = mode==='full'?FULL_H:HALF_H;
+    const bg = document.createElementNS(NS,'rect');
+    bg.setAttribute('x',0); bg.setAttribute('y',0); bg.setAttribute('width',w); bg.setAttribute('height',h);
+    bg.setAttribute('fill','var(--court-fill)');
+    svg.appendChild(bg);
+    if(mode === 'half'){
+      const band = document.createElementNS(NS,'rect');
+      band.setAttribute('x',0); band.setAttribute('y',-BAND); band.setAttribute('width',w); band.setAttribute('height',BAND);
+      band.setAttribute('fill','var(--band)');
+      svg.appendChild(band);
+    }
+    staticLayer = document.createElementNS(NS,'g');
+    zoneLayer = document.createElementNS(NS,'g');
+    elLayer = document.createElementNS(NS,'g');
+    tempLayer = document.createElementNS(NS,'g');
+    svg.appendChild(staticLayer); svg.appendChild(zoneLayer); svg.appendChild(elLayer); svg.appendChild(tempLayer);
+    ensureArrowMarkers();
+    drawLayer = staticLayer;
+    if(mode === 'half'){
+      // Tout ce qui sort du champ visible (au-delà des 3 m opposés) est coupé net
+      const defs = svg.querySelector('defs');
+      const cp = svgEl('clipPath', { id: 'halfClip' });
+      cp.appendChild(svgEl('rect', { x: -20, y: -BAND, width: HALF_W + 40, height: HALF_H + BAND + 20 }));
+      defs.appendChild(cp);
+      zoneLayer.setAttribute('clip-path', 'url(#halfClip)');
+      elLayer.setAttribute('clip-path', 'url(#halfClip)');
+    }
+    drawCourtLines(mode, svg);
+    if(currentSlot().split) drawSplitLine(mode);
+  }
+  function drawSplitLine(mode){
+    const segs = mode === 'full'
+      ? [[0, FULL_H/2, FULL_W, FULL_H/2, 1]]
+      : [[HALF_W/2, 0, HALF_W/2, HALF_H, 1], [HALF_W/2, -BAND, HALF_W/2, 0, 0.45]];
+    segs.forEach(s => {
+      const l = line(s[0], s[1], s[2], s[3]);
+      l.setAttribute('stroke-width', 2.2);
+      l.setAttribute('stroke-dasharray', '10 8');
+      l.setAttribute('stroke-linecap', 'round');
+      l.setAttribute('opacity', 0.6 * s[4]);
+    });
+  }
+
+  function line(x1,y1,x2,y2){
+    const l = document.createElementNS(NS,'line');
+    l.setAttribute('x1',x1); l.setAttribute('y1',y1); l.setAttribute('x2',x2); l.setAttribute('y2',y2);
+    l.setAttribute('stroke','var(--court-line)'); l.setAttribute('stroke-width', 2.5);
+    drawLayer.appendChild(l);
+    return l;
+  }
+  function netLine(x1,y1,x2,y2){
+    const l = document.createElementNS(NS,'line');
+    l.setAttribute('x1',x1); l.setAttribute('y1',y1); l.setAttribute('x2',x2); l.setAttribute('y2',y2);
+    l.setAttribute('stroke','var(--gold)'); l.setAttribute('stroke-width', 4); l.setAttribute('stroke-linecap','round');
+    drawLayer.appendChild(l);
+    // poteaux aux deux extrémités du filet
+    [[x1,y1],[x2,y2]].forEach(([x,y]) => {
+      const c = document.createElementNS(NS,'circle');
+      c.setAttribute('cx',x); c.setAttribute('cy',y); c.setAttribute('r',4.5);
+      c.setAttribute('fill','var(--gold)'); c.setAttribute('stroke','#0E141B'); c.setAttribute('stroke-width',1.5);
+      drawLayer.appendChild(c);
+    });
+  }
+
+  let drawLayer = null; // calque où line()/netLine() dessinent
+  function drawCourtLines(mode, root){
+    if(mode==='full'){
+      root.setAttribute('viewBox', `0 0 ${FULL_W} ${FULL_H}`);
+      line(0,0,FULL_W,0); line(0,FULL_H,FULL_W,FULL_H);
+      line(0,0,0,FULL_H); line(FULL_W,0,FULL_W,FULL_H);
+      netLine(FULL_W/2,-6,FULL_W/2,FULL_H+6);
+      line(FULL_W/2 - 3*SCALE, 0, FULL_W/2 - 3*SCALE, FULL_H);
+      line(FULL_W/2 + 3*SCALE, 0, FULL_W/2 + 3*SCALE, FULL_H);
+    } else {
+      // demi-terrain, filet vers le haut + bande des 3 m du côté opposé
+      root.setAttribute('viewBox', `0 ${-BAND} ${HALF_W} ${HALF_H + BAND}`);
+      line(0,0,0,HALF_H); line(HALF_W,0,HALF_W,HALF_H); line(0,HALF_H,HALF_W,HALF_H);
+      line(0, 3*SCALE, HALF_W, 3*SCALE);
+      // côté opposé : lignes en pointillés, plus discrètes
+      [[0,-BAND,0,0],[HALF_W,-BAND,HALF_W,0],[0,-BAND,HALF_W,-BAND]].forEach(c => {
+        const l = line(c[0],c[1],c[2],c[3]);
+        l.setAttribute('stroke-dasharray','6 6'); l.setAttribute('opacity','0.55');
+      });
+      netLine(-6,0,HALF_W+6,0);
+    }
+  }
+  function courtSize(mode){
+    return mode === 'full' ? { w: FULL_W, h: FULL_H } : { w: HALF_W, h: HALF_H + BAND };
+  }
+  function syncModeButtons(){
+    const m = currentSlot().mode;
+    btnFull.classList.toggle('active', m==='full');
+    btnHalf.classList.toggle('active', m==='half');
+    btnSplit.classList.toggle('on', !!currentSlot().split);
+  }
+
+  // ---------- Element factories ----------
+  // Style commun : contour sombre #0E141B, ombre douce, reflet clair intérieur
+  const OUTLINE = '#0E141B';
+  function svgEl(tag, attrs){
+    const e = document.createElementNS(NS, tag);
+    Object.keys(attrs).forEach(k => e.setAttribute(k, attrs[k]));
+    return e;
+  }
+  function makePlayerEl(type, x, y, num){
+    const g = svgEl('g', { class: 'el-player ' + (type==='player-a'?'team-a':'team-b'), transform: `translate(${x},${y})`, filter: 'url(#elShadow)' });
+    g.appendChild(svgEl('circle', { r: 16, fill: type==='player-a' ? 'var(--team-a)' : 'var(--team-b)', stroke: OUTLINE, 'stroke-width': 2.5 }));
+    g.appendChild(svgEl('circle', { r: 12.5, fill: 'none', stroke: '#ffffff', 'stroke-opacity': 0.35, 'stroke-width': 1.5 }));
+    const t = svgEl('text', { 'text-anchor': 'middle', dy: '5.5' });
+    t.textContent = num;
+    g.appendChild(t);
+    return g;
+  }
+  function makeBallEl(x,y){
+    // ballon de volley : 3 panneaux courbes
+    const g = svgEl('g', { class: 'el-ball', transform: `translate(${x},${y})`, filter: 'url(#elShadow)' });
+    g.appendChild(svgEl('circle', { r: 10.5, fill: '#F4EDDD', stroke: OUTLINE, 'stroke-width': 2 }));
+    g.appendChild(svgEl('path', { d: 'M -1,-10.4 Q 4,-2 -9,5', fill: 'none', stroke: OUTLINE, 'stroke-width': 1.4, 'stroke-linecap': 'round' }));
+    g.appendChild(svgEl('path', { d: 'M 9.6,-4 Q 1,-1 2,10.3', fill: 'none', stroke: OUTLINE, 'stroke-width': 1.4, 'stroke-linecap': 'round' }));
+    g.appendChild(svgEl('path', { d: 'M -8.5,-6 Q 0,2 7,7.5', fill: 'none', stroke: 'var(--gold)', 'stroke-width': 1.6, 'stroke-linecap': 'round' }));
+    return g;
+  }
+  function makeConeEl(x,y){
+    // plot vu de côté : socle, corps orange, bande claire
+    const g = svgEl('g', { class: 'el-cone', transform: `translate(${x},${y})`, filter: 'url(#elShadow)' });
+    g.appendChild(svgEl('ellipse', { cx: 0, cy: 8, rx: 10, ry: 3, fill: 'var(--cone-dark)', stroke: OUTLINE, 'stroke-width': 1.6 }));
+    g.appendChild(svgEl('path', { d: 'M -7,7.5 L -1.8,-10 Q 0,-12.2 1.8,-10 L 7,7.5 Q 0,10 -7,7.5 Z', fill: 'var(--cone)', stroke: OUTLINE, 'stroke-width': 1.6, 'stroke-linejoin': 'round' }));
+    g.appendChild(svgEl('path', { d: 'M -5.1,1 L 5.1,1 L 4,-2.8 L -4,-2.8 Z', fill: '#F4EDDD' }));
+    // zone de touche élargie (invisible) pour attraper le plot au doigt
+    g.appendChild(svgEl('circle', { r: 14, fill: 'transparent' }));
+    return g;
+  }
+
+  function makeZoneEl(kind, geom, label, color){
+    const g = document.createElementNS(NS,'g');
+    g.setAttribute('class','el-zone');
+    let shape, center;
+    if(kind === 'zone-oval'){
+      const { x1,y1,x2,y2 } = geom;
+      const x = Math.min(x1,x2), y = Math.min(y1,y2), w = Math.max(Math.abs(x2-x1),4), h = Math.max(Math.abs(y2-y1),4);
+      shape = document.createElementNS(NS,'ellipse');
+      shape.setAttribute('cx', x + w/2); shape.setAttribute('cy', y + h/2);
+      shape.setAttribute('rx', w/2); shape.setAttribute('ry', h/2);
+      center = { x: x + w/2, y: y + h/2 };
+    } else {
+      shape = document.createElementNS(NS,'polygon');
+      shape.setAttribute('points', geom.points.map(p => `${p.x},${p.y}`).join(' '));
+      center = centroid(geom.points);
+    }
+    shape.setAttribute('fill', color); shape.setAttribute('fill-opacity','0.16');
+    shape.setAttribute('stroke', color); shape.setAttribute('stroke-width',2.5); shape.setAttribute('stroke-dasharray','7 5');
+    shape.style.cursor = 'grab';
+    shape.dataset.role = 'main';
+    shape.dataset.sw = '2.5';
+    g.appendChild(shape);
+    const t = document.createElementNS(NS,'text');
+    t.setAttribute('class','zone-label');
+    t.setAttribute('x', center.x); t.setAttribute('y', center.y); t.setAttribute('text-anchor','middle'); t.setAttribute('dy','5');
+    t.style.fill = color;
+    t.textContent = label || 'Zone';
+    g.appendChild(t);
+    return g;
+  }
+  function applyZoneColor(record){
+    const shape = record.el.querySelector('[data-role="main"]');
+    shape.setAttribute('fill', record.color); shape.setAttribute('stroke', record.color);
+    record.el.querySelector('.zone-label').style.fill = record.color;
+  }
+  function renderZone(record){
+    const shape = record.el.querySelector('[data-role="main"]');
+    const t = record.el.querySelector('.zone-label');
+    if(record.type === 'zone-oval'){
+      const x = Math.min(record.x1,record.x2), y = Math.min(record.y1,record.y2);
+      const w = Math.max(Math.abs(record.x2-record.x1),4), h = Math.max(Math.abs(record.y2-record.y1),4);
+      shape.setAttribute('cx', x+w/2); shape.setAttribute('cy', y+h/2); shape.setAttribute('rx', w/2); shape.setAttribute('ry', h/2);
+      t.setAttribute('x', x+w/2); t.setAttribute('y', y+h/2);
+    } else {
+      shape.setAttribute('points', record.points.map(p => `${p.x},${p.y}`).join(' '));
+      const c = centroid(record.points);
+      t.setAttribute('x', c.x); t.setAttribute('y', c.y);
+    }
+  }
+
+  function ensureArrowMarkers(){
+    if(svg.querySelector('#arrowHeadDash')) return;
+    const defs = document.createElementNS(NS,'defs');
+    // Pointes de flèche en unités du dessin (même taille quel que soit le trait), forme encochée
+    const head = (id, color) => `<marker id="${id}" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="16" refX="13" refY="8" orient="auto"><path d="M1,1.5 L16,8 L1,14.5 L4.5,8 Z" fill="${color}" stroke="${color}" stroke-width="1" stroke-linejoin="round"/></marker>`;
+    defs.innerHTML = head('arrowHeadDash', 'var(--court-line)') + head('arrowHeadSolid', 'var(--gold)') + head('arrowHeadCurve', 'var(--ink)')
+      + `<filter id="elShadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="1.5" stdDeviation="1.4" flood-color="#000000" flood-opacity="0.4"/></filter>`;
+    svg.insertBefore(defs, svg.firstChild);
+  }
+
+  function makeLineEl(kind, x1,y1,x2,y2,cx,cy){
+    ensureArrowMarkers();
+    const g = document.createElementNS(NS,'g');
+    let mainShape;
+    if(kind === 'curve'){
+      mainShape = document.createElementNS(NS,'path');
+      mainShape.setAttribute('d', `M ${x1},${y1} Q ${cx},${cy} ${x2},${y2}`);
+      mainShape.setAttribute('fill','none'); mainShape.setAttribute('stroke','var(--ink)');
+      mainShape.setAttribute('stroke-width',3); mainShape.setAttribute('stroke-dasharray','0.1 7'); mainShape.setAttribute('stroke-linecap','round');
+      mainShape.setAttribute('marker-end','url(#arrowHeadCurve)');
+    } else {
+      mainShape = document.createElementNS(NS,'line');
+      mainShape.setAttribute('x1',x1); mainShape.setAttribute('y1',y1); mainShape.setAttribute('x2',x2); mainShape.setAttribute('y2',y2);
+      mainShape.setAttribute('stroke-width', 3);
+      mainShape.setAttribute('stroke-linecap','round');
+      if(kind==='arrow-move'){ mainShape.setAttribute('stroke','var(--court-line)'); mainShape.setAttribute('stroke-dasharray','8 7'); mainShape.setAttribute('marker-end','url(#arrowHeadDash)'); }
+      else { mainShape.setAttribute('stroke','var(--gold)'); mainShape.setAttribute('marker-end','url(#arrowHeadSolid)'); }
+    }
+    mainShape.style.cursor = 'grab';
+    mainShape.dataset.role = 'main';
+    mainShape.dataset.sw = mainShape.getAttribute('stroke-width');
+    g.appendChild(mainShape);
+    if(kind === 'curve'){
+      const handle = document.createElementNS(NS,'circle');
+      handle.setAttribute('class','curve-handle'); handle.setAttribute('r',7);
+      handle.setAttribute('cx',cx); handle.setAttribute('cy',cy);
+      handle.dataset.role = 'handle';
+      g.appendChild(handle);
+    }
+    return g;
+  }
+
+  // ---------- Add / restore elements ----------
+  function addElement(type, x, y){
+    const slot = currentSlot();
+    let el, num;
+    if(type==='player-a' || type==='player-b'){ num = slot.counters[type]++; el = makePlayerEl(type, x, y, num); }
+    else if(type==='ball'){ el = makeBallEl(x,y); }
+    else if(type==='cone'){ el = makeConeEl(x,y); }
+    else return;
+    const id = 'e'+(idSeq++);
+    el.dataset.id = id;
+    el.style.cursor = 'grab';
+    elLayer.appendChild(el);
+    const record = { id, type, x, y, num, el };
+    elements.push(record);
+    attachPointDrag(record);
+    return record;
+  }
+
+  function addLine(kind, x1,y1,x2,y2){
+    let cx, cy;
+    if(kind === 'curve'){
+      const mx = (x1+x2)/2, my = (y1+y2)/2;
+      const dx = x2-x1, dy = y2-y1;
+      const len = Math.hypot(dx,dy) || 1;
+      cx = mx + (-dy/len) * 34; cy = my + (dx/len) * 34;
+    }
+    const g = makeLineEl(kind, x1,y1,x2,y2,cx,cy);
+    const id = 'e'+(idSeq++);
+    g.dataset.id = id;
+    elLayer.appendChild(g);
+    const record = { id, type: kind, x1,y1,x2,y2,cx,cy, el:g };
+    elements.push(record);
+    attachLineDrag(record);
+    return record;
+  }
+
+  function addZone(kind, x1,y1,x2,y2){
+    const g = makeZoneEl(kind, {x1,y1,x2,y2}, 'Zone', DEFAULT_ZONE_COLOR);
+    const id = 'e'+(idSeq++);
+    g.dataset.id = id;
+    zoneLayer.appendChild(g);
+    const record = { id, type: kind, x1,y1,x2,y2, label:'Zone', color: DEFAULT_ZONE_COLOR, el:g };
+    elements.push(record);
+    attachZoneDrag(record);
+    return record;
+  }
+
+  function addZoneQuad(points){
+    const g = makeZoneEl('zone-rect', { points }, 'Zone', DEFAULT_ZONE_COLOR);
+    const id = 'e'+(idSeq++);
+    g.dataset.id = id;
+    zoneLayer.appendChild(g);
+    const record = { id, type:'zone-rect', points: points.map(p => ({...p})), label:'Zone', color: DEFAULT_ZONE_COLOR, el:g };
+    elements.push(record);
+    attachZoneDrag(record);
+    return record;
+  }
+
+  function loadElements(data, counters){
+    elements.forEach(e => e.el.remove());
+    elements = [];
+    data.forEach(d => {
+      if(d.type==='player-a'||d.type==='player-b'||d.type==='ball'||d.type==='cone'){
+        let el;
+        if(d.type==='player-a'||d.type==='player-b') el = makePlayerEl(d.type, d.x, d.y, d.num);
+        else if(d.type==='ball') el = makeBallEl(d.x,d.y);
+        else el = makeConeEl(d.x,d.y);
+        const id = 'e'+(idSeq++);
+        el.dataset.id = id; el.style.cursor='grab';
+        elLayer.appendChild(el);
+        const record = { id, type:d.type, x:d.x, y:d.y, num:d.num, el };
+        elements.push(record);
+        attachPointDrag(record);
+      } else if(d.type==='zone-oval'){
+        const color = d.color || DEFAULT_ZONE_COLOR;
+        const g = makeZoneEl('zone-oval', { x1:d.x1,y1:d.y1,x2:d.x2,y2:d.y2 }, d.label, color);
+        const id = 'e'+(idSeq++);
+        g.dataset.id = id;
+        zoneLayer.appendChild(g);
+        const record = { id, type:'zone-oval', x1:d.x1,y1:d.y1,x2:d.x2,y2:d.y2, label:d.label, color, el:g };
+        elements.push(record);
+        attachZoneDrag(record);
+      } else if(d.type==='zone-rect'){
+        const color = d.color || DEFAULT_ZONE_COLOR;
+        const points = d.points || [];
+        const g = makeZoneEl('zone-rect', { points }, d.label, color);
+        const id = 'e'+(idSeq++);
+        g.dataset.id = id;
+        zoneLayer.appendChild(g);
+        const record = { id, type:'zone-rect', points: points.map(p => ({...p})), label:d.label, color, el:g };
+        elements.push(record);
+        attachZoneDrag(record);
+      } else {
+        const g = makeLineEl(d.type, d.x1,d.y1,d.x2,d.y2,d.cx,d.cy);
+        const id = 'e'+(idSeq++);
+        g.dataset.id = id;
+        elLayer.appendChild(g);
+        const record = { id, type:d.type, x1:d.x1,y1:d.y1,x2:d.x2,y2:d.y2,cx:d.cx,cy:d.cy, el:g };
+        elements.push(record);
+        attachLineDrag(record);
+      }
+    });
+  }
+
+  async function renamePlayer(record){
+    const val = await openModal({ title:'Numéro du joueur', type:'input', value: record.num, confirmLabel:'OK' });
+    if(val !== false && val !== null && String(val).trim() !== ''){
+      record.num = String(val).trim();
+      record.el.querySelector('text').textContent = record.num;
+    }
+  }
+  async function renameZone(record){
+    const res = await openModal({ title:'Zone', type:'input', value: record.label, confirmLabel:'OK', palette: ZONE_COLORS, paletteValue: record.color });
+    if(res === false || res === null) return;
+    const label = String(res.text || '').trim();
+    if(label){ record.label = label; record.el.querySelector('.zone-label').textContent = label; }
+    if(res.color && res.color !== record.color){ record.color = res.color; applyZoneColor(record); }
+  }
+
+  // ---------- Drag ----------
+  function attachPointDrag(record){
+    let dragging = false;
+    let moved = false;
+    let wasSelectedAtStart = false;
+    let historyPushed = false;
+    let startClientX = 0, startClientY = 0;
+
+    record.el.addEventListener('pointerdown', (e) => {
+      if(activeTool !== 'select') return;
+      e.stopPropagation();
+      wasSelectedAtStart = (selectedId === record.id);
+      moved = false;
+      historyPushed = false;
+      startClientX = e.clientX; startClientY = e.clientY;
+      dragging = true;
+      selectElement(record.id);
+      record.el.setPointerCapture(e.pointerId);
+      record.el.style.cursor = 'grabbing';
+    });
+    record.el.addEventListener('pointermove', (e) => {
+      if(!dragging) return;
+      const dist = Math.hypot(e.clientX - startClientX, e.clientY - startClientY);
+      if(dist > 4 && !moved){
+        moved = true;
+        if(!historyPushed){ pushHistory(); historyPushed = true; }
+      }
+      if(!moved) return;
+      const p = toSvgPoint(e.clientX, e.clientY);
+      record.x = p.x; record.y = p.y;
+      record.el.setAttribute('transform', `translate(${p.x},${p.y})`);
+      updateSelectionRing();
+    });
+    record.el.addEventListener('pointerup', () => {
+      dragging = false;
+      record.el.style.cursor = 'grab';
+      if(!moved && wasSelectedAtStart && (record.type==='player-a' || record.type==='player-b')){
+        renamePlayer(record);
+      }
+    });
+  }
+
+  function attachLineDrag(record){
+    let dragMode = null; // 'translate' | 'handle'
+    let start = null;
+    let moved = false, startClientX = 0, startClientY = 0;
+    function begin(e, mode){
+      if(activeTool !== 'select') return;
+      e.stopPropagation();
+      selectElement(record.id);
+      dragMode = mode;
+      moved = false;
+      startClientX = e.clientX; startClientY = e.clientY;
+      start = toSvgPoint(e.clientX, e.clientY);
+      record.el.setPointerCapture(e.pointerId);
+    }
+    const main = record.el.querySelector('[data-role="main"]');
+    main.addEventListener('pointerdown', (e) => begin(e, 'translate'));
+    const handle = record.el.querySelector('[data-role="handle"]');
+    if(handle){
+      handle.addEventListener('pointerdown', (e) => begin(e, 'handle'));
+    }
+    record.el.addEventListener('pointermove', (e) => {
+      if(!dragMode) return;
+      if(!moved){
+        if(Math.hypot(e.clientX - startClientX, e.clientY - startClientY) <= 4) return;
+        moved = true;
+        pushHistory();
+      }
+      const p = toSvgPoint(e.clientX, e.clientY);
+      if(dragMode === 'translate'){
+        const dx = p.x - start.x, dy = p.y - start.y;
+        start = p;
+        record.x1 += dx; record.y1 += dy; record.x2 += dx; record.y2 += dy;
+        if(record.cx !== undefined){ record.cx += dx; record.cy += dy; }
+        renderLine(record);
+      } else if(dragMode === 'handle'){
+        record.cx = p.x; record.cy = p.y;
+        renderLine(record);
+      }
+    });
+    record.el.addEventListener('pointerup', () => { dragMode = null; });
+  }
+
+  function renderLine(record){
+    const main = record.el.querySelector('[data-role="main"]');
+    if(record.type === 'curve'){
+      main.setAttribute('d', `M ${record.x1},${record.y1} Q ${record.cx},${record.cy} ${record.x2},${record.y2}`);
+      const handle = record.el.querySelector('[data-role="handle"]');
+      if(handle){ handle.setAttribute('cx', record.cx); handle.setAttribute('cy', record.cy); }
+    } else {
+      main.setAttribute('x1', record.x1); main.setAttribute('y1', record.y1);
+      main.setAttribute('x2', record.x2); main.setAttribute('y2', record.y2);
+    }
+  }
+
+  function attachZoneDrag(record){
+    let dragging = false, moved = false, wasSelectedAtStart = false, historyPushed = false;
+    let start = null;
+    const main = record.el.querySelector('[data-role="main"]');
+    main.addEventListener('pointerdown', (e) => {
+      if(activeTool !== 'select') return;
+      e.stopPropagation();
+      wasSelectedAtStart = (selectedId === record.id);
+      moved = false; historyPushed = false;
+      start = toSvgPoint(e.clientX, e.clientY);
+      selectElement(record.id);
+      record.el.setPointerCapture(e.pointerId);
+      dragging = true;
+    });
+    record.el.addEventListener('pointermove', (e) => {
+      if(!dragging) return;
+      const p = toSvgPoint(e.clientX, e.clientY);
+      const dx = p.x - start.x, dy = p.y - start.y;
+      if(Math.hypot(dx,dy) > 3 && !moved){
+        moved = true;
+        if(!historyPushed){ pushHistory(); historyPushed = true; }
+      }
+      if(!moved) return;
+      if(record.type === 'zone-oval'){
+        record.x1 += dx; record.y1 += dy; record.x2 += dx; record.y2 += dy;
+      } else {
+        record.points = record.points.map(pt => ({ x: pt.x + dx, y: pt.y + dy }));
+      }
+      start = p;
+      renderZone(record);
+    });
+    record.el.addEventListener('pointerup', () => {
+      dragging = false;
+      if(!moved && wasSelectedAtStart){ renameZone(record); }
+    });
+  }
+
+  // ---------- Selection ----------
+  let ringEl = null;
+  function resetStrokes(){
+    elements.forEach(e => {
+      const m = e.el && e.el.querySelector && e.el.querySelector('[data-role="main"]');
+      if(m && m.dataset.sw) m.setAttribute('stroke-width', m.dataset.sw);
+    });
+  }
+  function selectElement(id){ selectedId = id; updateSelectionRing(); updateToolAvailability(); }
+  function deselect(){
+    if(selectedId){
+      const rec = elements.find(e => e.id === selectedId);
+      if(rec && rec.el) rec.el.classList.remove('is-selected');
+    }
+    selectedId = null;
+    if(ringEl){ ringEl.remove(); ringEl = null; }
+    resetStrokes();
+    updateToolAvailability();
+  }
+  function updateSelectionRing(){
+    if(ringEl){ ringEl.remove(); ringEl = null; }
+    resetStrokes();
+    elements.forEach(e => e.el.classList && e.el.classList.remove('is-selected'));
+    const rec = elements.find(e => e.id === selectedId);
+    if(!rec) return;
+    if(rec.type==='player-a'||rec.type==='player-b'||rec.type==='ball'||rec.type==='cone'){
+      ringEl = document.createElementNS(NS,'circle');
+      ringEl.setAttribute('class','selected-ring'); ringEl.setAttribute('r', 21);
+      ringEl.setAttribute('cx', rec.x); ringEl.setAttribute('cy', rec.y);
+      elLayer.appendChild(ringEl);
+    } else {
+      rec.el.querySelector('[data-role="main"]').setAttribute('stroke-width', 5);
+      rec.el.classList.add('is-selected'); // affiche le point de réglage des courbes
+    }
+  }
+
+  function deleteSelected(){
+    const idx = elements.findIndex(e => e.id === selectedId);
+    if(idx === -1) return;
+    pushHistory();
+    elements[idx].el.remove();
+    elements.splice(idx,1);
+    deselect();
+  }
+  function clearAll(){
+    if(elements.length){ pushHistory(); }
+    elements.forEach(e => e.el.remove());
+    elements = [];
+    currentSlot().counters = { 'player-a':1, 'player-b':1 };
+    deselect();
+  }
+
+  // ---------- Tools ----------
+  const TOOLS = [
+    { id:'select', label:'Sélection', icon:`<svg width="24" height="24" viewBox="0 0 24 24"><path d="M4 12h13m0 0l-5-5m5 5l-5 5" stroke="#EFE8D8" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
+    { sep:true },
+    { id:'player-a', label:'Bleue', icon:`<svg width="24" height="24" viewBox="-12 -12 24 24"><circle r="9.5" fill="var(--team-a)" stroke="#0E141B" stroke-width="2"/><circle r="7" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1.2"/></svg>` },
+    { id:'player-b', label:'Rouge', icon:`<svg width="24" height="24" viewBox="-12 -12 24 24"><circle r="9.5" fill="var(--team-b)" stroke="#0E141B" stroke-width="2"/><circle r="7" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1.2"/></svg>` },
+    { id:'ball', label:'Ballon', icon:`<svg width="24" height="24" viewBox="-12 -12 24 24"><circle r="9" fill="#F4EDDD" stroke="#0E141B" stroke-width="1.8"/><path d="M -1,-9 Q 3.5,-1.7 -7.8,4.3" fill="none" stroke="#0E141B" stroke-width="1.2" stroke-linecap="round"/><path d="M 8.3,-3.4 Q 0.9,-0.9 1.7,8.8" fill="none" stroke="#0E141B" stroke-width="1.2" stroke-linecap="round"/><path d="M -7.3,-5.2 Q 0,1.7 6,6.4" fill="none" stroke="var(--gold)" stroke-width="1.4" stroke-linecap="round"/></svg>` },
+    { id:'cone', label:'Plot', icon:`<svg width="24" height="24" viewBox="-12 -13 24 24"><ellipse cx="0" cy="7" rx="9" ry="2.7" fill="var(--cone-dark)" stroke="#0E141B" stroke-width="1.4"/><path d="M -6.3,6.6 L -1.6,-9 Q 0,-11 1.6,-9 L 6.3,6.6 Q 0,8.8 -6.3,6.6 Z" fill="var(--cone)" stroke="#0E141B" stroke-width="1.4" stroke-linejoin="round"/><path d="M -4.6,0.9 L 4.6,0.9 L 3.6,-2.5 L -3.6,-2.5 Z" fill="#F4EDDD"/></svg>` },
+    { sep:true },
+    { id:'arrow-move', label:'Déplacement', icon:`<svg width="24" height="24" viewBox="0 0 24 24"><line x1="3" y1="12" x2="18" y2="12" stroke="#EFE8D8" stroke-width="2" stroke-dasharray="3 3"/><path d="M14 7l6 5-6 5" stroke="#EFE8D8" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
+    { id:'arrow-hit', label:'Passe / frappe', icon:`<svg width="24" height="24" viewBox="0 0 24 24"><line x1="3" y1="12" x2="18" y2="12" stroke="var(--gold)" stroke-width="2.5"/><path d="M14 7l6 5-6 5" stroke="var(--gold)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
+    { id:'curve', label:'Trajectoire ballon', icon:`<svg width="24" height="24" viewBox="0 0 24 24"><path d="M3 17 Q12 3 20 10" stroke="#EFE8D8" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="1 4"/><path d="M16 8l4 2-2 4" stroke="#EFE8D8" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
+    { sep:true },
+    { id:'zone-rect', label:'Zone (4 coins)', icon:`<svg width="24" height="24" viewBox="0 0 24 24"><polygon points="4,8 18,4 20,17 7,20" fill="var(--gold)" fill-opacity="0.25" stroke="var(--gold)" stroke-width="2" stroke-dasharray="3 2.5"/></svg>` },
+    { id:'zone-oval', label:'Zone ovale', icon:`<svg width="24" height="24" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="9" ry="6" fill="var(--gold)" fill-opacity="0.25" stroke="var(--gold)" stroke-width="2" stroke-dasharray="3 2.5"/></svg>` },
+    { id:'undo', label:'Annuler', danger:false, icon:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M7 7L3 11l4 4M3 11h11a6 6 0 010 12h-2" stroke="#EFE8D8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
+    { id:'delete', label:'Supprimer', danger:true, icon:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" stroke="var(--danger)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
+    { id:'clear', label:'Tout effacer', danger:true, icon:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 19L19 5M5 5l14 14" stroke="var(--danger)" stroke-width="2" stroke-linecap="round"/></svg>` },
+  ];
+
+  function buildToolbar(){
+    toolbar.innerHTML = '';
+    TOOLS.forEach(t => {
+      if(t.sep){ const s = document.createElement('div'); s.className='sep'; toolbar.appendChild(s); return; }
+      const btn = document.createElement('div');
+      btn.className = 'tool' + (t.id===activeTool?' active':'') + (t.danger?' danger':'');
+      btn.dataset.tool = t.id;
+      btn.innerHTML = `<div class="icon">${t.icon}</div><div class="lbl">${t.label}</div>`;
+      btn.addEventListener('click', () => handleToolClick(t.id));
+      toolbar.appendChild(btn);
+    });
+    updateToolAvailability();
+  }
+  function updateToolAvailability(){
+    const del = toolbar.querySelector('[data-tool="delete"]');
+    if(del) del.classList.toggle('disabled', !selectedId);
+    updateUndoState();
+  }
+  function setActiveTool(id){
+    activeTool = id;
+    [...toolbar.querySelectorAll('.tool')].forEach(b => b.classList.toggle('active', b.dataset.tool===id));
+    pendingLine = null; pendingQuad = null; tempLayer.innerHTML = '';
+    const hints = {
+      'select':'Touche un élément pour le sélectionner et le déplacer',
+      'player-a':'Touche le terrain pour placer une joueuse — touche-la deux fois pour changer son numéro',
+      'player-b':'Touche le terrain pour placer une joueuse — touche-la deux fois pour changer son numéro',
+      'ball':'Touche le terrain pour placer le ballon',
+      'cone':'Touche le terrain pour placer un plot',
+      'arrow-move':"Touche le point de départ, puis le point d'arrivée",
+      'arrow-hit':"Touche le point de départ, puis le point d'arrivée",
+      'curve':"Touche le départ puis l'arrivée — ajuste ensuite la courbe avec le point doré",
+      'zone-rect':"Touche les 4 coins de la zone, dans l'ordre",
+      'zone-oval':"Touche un coin, puis le coin opposé pour dessiner la zone",
+    };
+    if(hints[id]) showHint(hints[id], 2800);
+  }
+  async function handleToolClick(id){
+    if(id === 'delete'){ deleteSelected(); return; }
+    if(id === 'undo'){ undo(); return; }
+    if(id === 'clear'){
+      const ok = await openModal({ title:'Tout effacer', message:"Effacer tous les éléments de ce schéma (joueuses, ballon, plots, flèches, zones) ? Tu pourras faire Annuler juste après si besoin.", confirmLabel:'Effacer', danger:true });
+      if(ok) clearAll();
+      return;
+    }
+    setActiveTool(id);
+  }
+  let hintTimer = null;
+  function showHint(text, ms){
+    hintEl.textContent = text; hintEl.classList.toggle('show', !!text);
+    if(hintTimer){ clearTimeout(hintTimer); hintTimer = null; }
+    if(text && ms) hintTimer = setTimeout(() => showHint(''), ms);
+  }
+
+  // ---------- Canvas interaction ----------
+  svg.addEventListener('pointerdown', (e) => {
+    if(e.target.tagName === 'rect' || e.target === svg) deselect();
+    const p = toSvgPoint(e.clientX, e.clientY);
+    if(['player-a','player-b','ball','cone'].includes(activeTool)){
+      pushHistory();
+      addElement(activeTool, p.x, p.y);
+      return;
+    }
+    if(activeTool === 'zone-rect'){
+      if(!pendingQuad) pendingQuad = { points: [] };
+      pendingQuad.points.push({ x:p.x, y:p.y });
+      const dot = document.createElementNS(NS,'circle');
+      dot.setAttribute('cx',p.x); dot.setAttribute('cy',p.y); dot.setAttribute('r',4);
+      dot.setAttribute('fill','var(--gold)'); dot.setAttribute('class','ghost');
+      tempLayer.appendChild(dot);
+      if(pendingQuad.points.length >= 2){
+        const prev = pendingQuad.points[pendingQuad.points.length-2];
+        const ln = document.createElementNS(NS,'line');
+        ln.setAttribute('x1',prev.x); ln.setAttribute('y1',prev.y); ln.setAttribute('x2',p.x); ln.setAttribute('y2',p.y);
+        ln.setAttribute('stroke','var(--gold)'); ln.setAttribute('stroke-width',2); ln.setAttribute('stroke-dasharray','3 3');
+        ln.setAttribute('class','ghost');
+        tempLayer.appendChild(ln);
+      }
+      if(pendingQuad.points.length === 4){
+        pushHistory();
+        addZoneQuad(pendingQuad.points);
+        pendingQuad = null; tempLayer.innerHTML = '';
+      }
+      return;
+    }
+    if(activeTool === 'arrow-move' || activeTool === 'arrow-hit' || activeTool === 'curve' || activeTool === 'zone-oval'){
+      const kind = activeTool;
+      if(!pendingLine){
+        pendingLine = { kind, x1:p.x, y1:p.y };
+        const dot = document.createElementNS(NS,'circle');
+        dot.setAttribute('cx',p.x); dot.setAttribute('cy',p.y); dot.setAttribute('r',4);
+        dot.setAttribute('fill','var(--gold)'); dot.setAttribute('class','ghost');
+        tempLayer.appendChild(dot);
+      } else {
+        pushHistory();
+        if(kind === 'zone-oval'){
+          addZone(kind, pendingLine.x1, pendingLine.y1, p.x, p.y);
+        } else {
+          addLine(kind, pendingLine.x1, pendingLine.y1, p.x, p.y);
+        }
+        pendingLine = null; tempLayer.innerHTML = '';
+      }
+    }
+  });
+
+  // ---------- Full/half toggle ----------
+  btnFull.addEventListener('click', () => switchMode('full'));
+  btnHalf.addEventListener('click', () => switchMode('half'));
+  btnSplit.addEventListener('click', () => {
+    const slot = currentSlot();
+    pushHistory();
+    const data = serializeElements();
+    slot.split = !slot.split;
+    buildSvgShell(slot.mode);
+    syncModeButtons();
+    loadElements(data, slot.counters);
+    deselect();
+  });
+  // --- Conversion automatique terrain complet <-> demi-terrain ---
+  // Terrain complet : filet vertical au centre (x = FULL_W/2). Demi-terrain : filet en haut (y = 0),
+  // la bande y ∈ [-BAND, 0] montre les 3 m du côté opposé. Les deux transformations sont des rotations
+  // (pas de miroir) : la gauche d'une joueuse face au filet reste sa gauche.
+  const MID = FULL_W / 2;
+  const F2H = {
+    left:  (x, y) => ({ x: y,          y: MID - x }),
+    right: (x, y) => ({ x: FULL_H - y, y: x - MID }),
+  };
+  const H2F = {
+    left:  (x, y) => ({ x: MID - y, y: x }),
+    right: (x, y) => ({ x: MID + y, y: FULL_H - x }),
+  };
+  const POINT_TYPES = ['player-a','player-b','ball','cone'];
+
+  // Les éléments ne sont jamais déplacés : en demi-terrain, ce qui tombe au-delà de la bande
+  // des 3 m opposés sort simplement du champ (masqué) et réapparaît tel quel en terrain complet.
+  function transformElement(d, fn){
+    const out = JSON.parse(JSON.stringify(d));
+    let allOut = true;
+    const tp = (x, y) => {
+      const p = fn(x, y);
+      if(p.y >= -BAND) allOut = false;
+      return p;
+    };
+    if(POINT_TYPES.includes(d.type)){
+      const p = tp(d.x, d.y); out.x = p.x; out.y = p.y;
+    } else if(d.points){
+      out.points = d.points.map(pt => tp(pt.x, pt.y));
+    } else {
+      const a = tp(d.x1, d.y1), b = tp(d.x2, d.y2);
+      out.x1 = a.x; out.y1 = a.y; out.x2 = b.x; out.y2 = b.y;
+      if(d.cx !== undefined && d.cx !== null){ const c = fn(d.cx, d.cy); out.cx = c.x; out.cy = c.y; }
+    }
+    return { el: out, hidden: allOut };
+  }
+
+  function switchMode(m){
+    const slot = currentSlot();
+    if(slot.mode === m) return;
+    pushHistory();
+    const data = serializeElements();
+    let converted, hiddenCount = 0, msg;
+    if(m === 'half'){
+      // Le côté gauche du terrain complet est toujours conservé
+      slot.side = 'left';
+      converted = data.map(d => {
+        const r = transformElement(d, F2H.left);
+        if(r.hidden) hiddenCount++;
+        return r.el;
+      });
+      msg = 'Converti en demi-terrain';
+      if(hiddenCount) msg += ' — ' + hiddenCount + ' élément' + (hiddenCount > 1 ? 's' : '') + ' hors champ masqué' + (hiddenCount > 1 ? 's' : '') + ', visible' + (hiddenCount > 1 ? 's' : '') + ' en terrain complet';
+    } else {
+      converted = data.map(d => transformElement(d, H2F[slot.side || 'left']).el);
+      msg = 'Converti en terrain complet';
+    }
+    slot.mode = m;
+    buildSvgShell(m);
+    syncModeButtons();
+    loadElements(converted, slot.counters);
+    deselect();
+    updatePrintTitleText();
+    showHint(msg + ' — Annuler pour revenir', 4500);
+  }
+
+  // ---------- Print ----------
+  const APP_TITLE = document.title;
+  // Lance l'impression. Dans un aperçu intégré (iframe protégée), le navigateur l'ignore sans rien afficher :
+  // on prévient alors l'utilisateur.
+  function doPrint(){
+    let embedded = false;
+    try{ embedded = window.self !== window.top; }catch(err){ embedded = true; }
+    try{ window.print(); }catch(err){ embedded = true; }
+    if(embedded){
+      openModal({ title: 'Impression bloquée ?', message: "Si la fenêtre d'impression ne s'est pas ouverte, c'est que l'appli tourne dans un aperçu intégré qui bloque l'impression. Ouvre le fichier directement dans Safari ou Chrome (ou depuis ton hébergement) : l'impression et le PDF y fonctionnent.", confirmLabel: 'Compris' });
+    }
+  }
+  btnPrint.addEventListener('click', () => { document.body.classList.remove('print-seance'); doPrint(); });
+
+  // ---------- Fiche de l'exercice ----------
+  function updateTitle(){ exTitle.textContent = fiche.nom || 'Nouvel exercice'; }
+  btnFiche.addEventListener('click', () => {
+    ficheNom.value = fiche.nom || '';
+    ficheExpl.value = fiche.explication || '';
+    ficheReussite.value = fiche.reussite || '';
+    ficheTags.value = (fiche.tags || []).join(', ');
+    ficheOverlay.classList.add('show');
+    setTimeout(() => ficheNom.focus(), 30);
+  });
+  document.getElementById('ficheCancel').addEventListener('click', () => ficheOverlay.classList.remove('show'));
+  ficheOverlay.addEventListener('click', (e) => { if(e.target === ficheOverlay) ficheOverlay.classList.remove('show'); });
+  document.getElementById('ficheSave').addEventListener('click', () => {
+    fiche.nom = ficheNom.value.trim();
+    fiche.explication = ficheExpl.value.trim();
+    fiche.reussite = ficheReussite.value.trim();
+    const seen = new Set();
+    fiche.tags = ficheTags.value.split(',').map(t => t.trim()).filter(t => {
+      const k = t.toLowerCase();
+      if(!t || seen.has(k)) return false;
+      seen.add(k); return true;
+    });
+    ficheOverlay.classList.remove('show');
+    updateTitle(); updatePrintTitleText(); autoSave();
+  });
+
+  // ---------- Nouvel exercice (depuis l'éditeur) ----------
+  btnNew.addEventListener('click', async () => {
+    await leaveCurrentExercise();
+    openExercise(blankRecord());
+  });
+
+  // ---------- Note propre à une phase ----------
+  btnDesc.addEventListener('click', async () => {
+    const val = await openModal({ title:'Note — ' + phases[curPhase].label, type:'textarea', value: phases[curPhase].description || '', confirmLabel:'Enregistrer' });
+    if(val !== false && val !== null){
+      phases[curPhase].description = String(val);
+      updatePrintTitleText();
+    }
+  });
+
+  // ---------- Export image (PNG, économe en encre) ----------
+  // Découpe un texte en lignes (respecte les retours à la ligne saisis)
+  function splitLines(ctx, text, maxWidth, maxLines){
+    const out = [];
+    String(text || '').split('\n').forEach(par => {
+      const words = par.split(' ');
+      let line = '';
+      words.forEach(w => {
+        const test = line ? line + ' ' + w : w;
+        if(ctx.measureText(test).width > maxWidth && line){ out.push(line); line = w; }
+        else line = test;
+      });
+      out.push(line);
+    });
+    while(out.length && !out[out.length-1].trim()) out.pop();
+    if(out.length > maxLines){ out.length = maxLines; out[maxLines-1] += ' …'; }
+    return out;
+  }
+  function exportImage(){
+    deselect();
+    const slot = currentSlot();
+    const { w, h } = courtSize(slot.mode);
+    const clone = svg.cloneNode(true);
+    clone.setAttribute('xmlns','http://www.w3.org/2000/svg');
+    clone.setAttribute('width', w); clone.setAttribute('height', h);
+    const overrideStyle = document.createElementNS(NS,'style');
+    overrideStyle.textContent = '.el-zone [data-role="main"]{fill:#ffffff !important; fill-opacity:.08 !important; stroke:#000000 !important;}'
+      + ' .el-zone .zone-label{fill:#000000 !important; font-family:Oswald, Arial, sans-serif; font-weight:600; font-size:13px; text-transform:uppercase;}'
+      + ' .el-player text{font-family:Oswald, Arial, sans-serif; font-weight:600; font-size:15px; fill:#000000;}'
+      + ' .el-player.team-b text{fill:#ffffff;}'
+      + ' .el-ball path{fill:none;}';
+    clone.insertBefore(overrideStyle, clone.firstChild);
+    let svgStr = new XMLSerializer().serializeToString(clone);
+    svgStr = svgStr.split(' filter="url(#elShadow)"').join('');
+    const printColors = { '--court-fill':'#ffffff', '--band':'#F2F2F2', '--cone-dark':'#ffffff', '--court-line':'#000000', '--gold':'#000000', '--ink':'#000000', '--team-a':'#ffffff', '--team-b':'#000000', '--cone':'#ffffff' };
+    Object.keys(printColors).forEach(k => { svgStr = svgStr.split('var(' + k + ')').join(printColors[k]); });
+    svgStr = svgStr.split('#0E141B').join('#000000').split('#8A4A0E').join('#000000').split('#3A2E1B').join('#555555');
+    svgStr = svgStr.replace(/class="curve-handle"/g, 'class="curve-handle" display="none"');
+
+    const svgBlob = new Blob([svgStr], { type:'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(svgBlob);
+    const img = new Image();
+    img.onload = () => {
+      const scale = 2;
+      const bodyFont = "13px 'Barlow', sans-serif";
+      const measure = document.createElement('canvas').getContext('2d');
+      measure.font = bodyFont;
+      // Blocs de texte : explication, note de phase, critère de réussite
+      const blocks = [];
+      if(fiche.explication) blocks.push(splitLines(measure, fiche.explication, w - 8, 6));
+      if(phases[curPhase].description) blocks.push(splitLines(measure, phases[curPhase].description, w - 8, 3));
+      if(fiche.reussite) blocks.push(splitLines(measure, 'Réussite : ' + fiche.reussite, w - 8, 2));
+      const lineH = 16;
+      const textLines = blocks.reduce((n,b) => n + b.length, 0);
+      const topMargin = 54 + textLines * lineH + blocks.length * 4 + 8;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = w * scale; canvas.height = (h + topMargin) * scale;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.scale(scale, scale);
+      ctx.fillStyle = '#000000';
+      ctx.font = "600 18px 'Oswald', sans-serif";
+      ctx.fillText(fiche.nom || 'Exercice', 4, 22);
+      ctx.font = "600 13px 'Barlow', sans-serif";
+      ctx.fillStyle = '#555555';
+      ctx.fillText(phases[curPhase].label + ' — ' + phases[curPhase].evolutions[curEvo].label, 4, 42);
+      ctx.font = bodyFont;
+      ctx.fillStyle = '#222222';
+      let y = 62;
+      blocks.forEach(b => { b.forEach(l => { ctx.fillText(l, 4, y); y += lineH; }); y += 4; });
+      ctx.drawImage(img, 0, topMargin, w, h);
+      URL.revokeObjectURL(url);
+      canvas.toBlob((blob) => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = fileBase() + '_' + slug(phases[curPhase].label) + '_' + slug(phases[curPhase].evolutions[curEvo].label) + '.png';
+        document.body.appendChild(a); a.click(); a.remove();
+      }, 'image/png');
+    };
+    img.src = url;
+  }
+  btnExportPng.addEventListener('click', exportImage);
+
+  // ---------- Sauvegarde / chargement en fichier .json ----------
+  function slug(text){
+    return String(text || '').normalize('NFD').replace(/[̀-ͯ]/g,'')
+      .replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase();
+  }
+  function fileBase(){ return slug(fiche.nom) || 'exercice-volley'; }
+  function buildExportData(){
+    saveCurrentIntoSlot();
+    return {
+      version: 2,
+      fiche: { nom: fiche.nom, explication: fiche.explication, reussite: fiche.reussite, tags: [...(fiche.tags||[])] },
+      phases: phases.map(ph => ({
+        label: ph.label,
+        description: ph.description || '',
+        evolutions: ph.evolutions.map(ev => ({
+          label: ev.label,
+          slot: { mode: ev.slot.mode, side: ev.slot.side || 'left', split: !!ev.slot.split, elements: ev.slot.elements, counters: ev.slot.counters }
+        }))
+      }))
+    };
+  }
+  // Applique des données (fichier .json v1/v2 ou brouillon enregistré). Lève une erreur si invalide.
+  function applyData(data){
+    if(!data || !data.phases || !data.phases.length) throw new Error('format invalide');
+    const f = data.fiche || {};
+    const newPhases = data.phases.map((ph,i) => ({
+      id:'p'+(i+1), label: ph.label || ('Phase '+(i+1)), description: ph.description || '',
+      evolutions: (ph.evolutions && ph.evolutions.length ? ph.evolutions : [{ label:'Base' }]).map((ev,j) => ({
+        id:'e'+(j+1), label: ev.label || ('Évolution '+(j+1)),
+        slot: {
+          mode: (ev.slot && ev.slot.mode) === 'half' ? 'half' : 'full',
+          side: (ev.slot && ev.slot.side) === 'right' ? 'right' : 'left',
+          split: !!(ev.slot && ev.slot.split),
+          elements: (ev.slot && ev.slot.elements) || [],
+          counters: (ev.slot && ev.slot.counters) || { 'player-a':1, 'player-b':1 },
+          history: []
+        }
+      }))
+    }));
+    fiche = { nom: f.nom || '', explication: f.explication || '', reussite: f.reussite || '', tags: Array.isArray(f.tags) ? f.tags : [] };
+    phases = newPhases;
+    curPhase = 0; curEvo = 0;
+    renderPhaseTabs(); renderEvoTabs();
+    rebuildCanvasForCurrentSlot(false);
+    updateTitle();
+  }
+  function exportJson(){
+    const data = buildExportData();
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = fileBase() + '.json';
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+  btnExportJson.addEventListener('click', exportJson);
+
+  // ---------- Phases / evolutions UI ----------
+  function buildTab(cls, label, deletable){
+    const tab = document.createElement('div');
+    tab.className = cls;
+    const span = document.createElement('span');
+    span.textContent = label;
+    tab.appendChild(span);
+    if(deletable){
+      const x = document.createElement('span');
+      x.className = 'x'; x.textContent = '✕';
+      tab.appendChild(x);
+    }
+    return tab;
+  }
+  function renderPhaseTabs(){
+    phaseTabsEl.innerHTML = '';
+    phases.forEach((ph, i) => {
+      const tab = buildTab('tab' + (i===curPhase ? ' active' : ''), ph.label, phases.length > 1);
+      // Toucher l'onglet déjà actif = le renommer (le double-clic n'est pas fiable au doigt sur iPad)
+      tab.addEventListener('click', (e) => {
+        if(e.target.classList.contains('x')){ deletePhase(i); return; }
+        if(i === curPhase){ renamePhase(i); return; }
+        selectPhase(i);
+      });
+      phaseTabsEl.appendChild(tab);
+    });
+    const add = document.createElement('div');
+    add.className = 'tab-add'; add.textContent = '+';
+    add.addEventListener('click', addPhase);
+    phaseTabsEl.appendChild(add);
+  }
+  function renderEvoTabs(){
+    evoTabsEl.innerHTML = '';
+    const evos = phases[curPhase].evolutions;
+    evos.forEach((ev, i) => {
+      const tab = buildTab('tab evo-tab' + (i===curEvo ? ' active' : ''), ev.label, evos.length > 1);
+      tab.addEventListener('click', (e) => {
+        if(e.target.classList.contains('x')){ deleteEvo(i); return; }
+        if(i === curEvo){ renameEvo(i); return; }
+        selectEvo(i);
+      });
+      evoTabsEl.appendChild(tab);
+    });
+    const add = document.createElement('div');
+    add.className = 'tab-add evo'; add.textContent = '+';
+    add.addEventListener('click', addEvo);
+    evoTabsEl.appendChild(add);
+  }
+
+  function saveCurrentIntoSlot(){
+    const slot = currentSlot();
+    slot.elements = serializeElements();
+  }
+
+  function rebuildCanvasForCurrentSlot(keepElements){
+    const slot = currentSlot();
+    buildSvgShell(slot.mode);
+    syncModeButtons();
+    if(keepElements){
+      loadElements(serializeElements(), slot.counters);
+    } else {
+      loadElements(slot.elements, slot.counters);
+    }
+    deselect();
+    updatePrintTitleText();
+  }
+
+  function updatePrintTitleText(){
+    let el = document.querySelector('.print-title');
+    if(!el){
+      el = document.createElement('div');
+      el.className = 'print-title';
+      document.querySelector('main').insertBefore(el, svg);
+    }
+    const parts = [ fiche.nom || 'Exercice', phases[curPhase].label + ' — ' + phases[curPhase].evolutions[curEvo].label ];
+    if(fiche.explication) parts.push(fiche.explication);
+    if(phases[curPhase].description) parts.push(phases[curPhase].description);
+    if(fiche.reussite) parts.push('Réussite : ' + fiche.reussite);
+    el.textContent = parts.join(' — ');
+  }
+
+  function selectPhase(i){
+    saveCurrentIntoSlot();
+    curPhase = i; curEvo = 0;
+    renderPhaseTabs(); renderEvoTabs();
+    rebuildCanvasForCurrentSlot(false);
+  }
+  function selectEvo(i){
+    saveCurrentIntoSlot();
+    curEvo = i;
+    renderEvoTabs();
+    rebuildCanvasForCurrentSlot(false);
+  }
+  function addPhase(){
+    saveCurrentIntoSlot();
+    const n = phases.length + 1;
+    phases.push(newPhase(n, currentSlot()));
+    curPhase = phases.length - 1; curEvo = 0;
+    renderPhaseTabs(); renderEvoTabs();
+    rebuildCanvasForCurrentSlot(false);
+  }
+  async function deletePhase(i){
+    if(phases.length <= 1) return;
+    const ok = await openModal({ title:'Supprimer la phase', message:'Supprimer "' + phases[i].label + '" et ses évolutions ?', confirmLabel:'Supprimer', danger:true });
+    if(!ok) return;
+    phases.splice(i,1);
+    if(curPhase >= phases.length) curPhase = phases.length - 1;
+    curEvo = 0;
+    renderPhaseTabs(); renderEvoTabs();
+    rebuildCanvasForCurrentSlot(false);
+  }
+  async function renamePhase(i){
+    const val = await openModal({ title:'Nom de la phase', type:'input', value: phases[i].label, confirmLabel:'OK' });
+    if(val !== false && val !== null && String(val).trim() !== ''){ phases[i].label = String(val).trim(); renderPhaseTabs(); updatePrintTitleText(); }
+  }
+  function addEvo(){
+    saveCurrentIntoSlot();
+    const evos = phases[curPhase].evolutions;
+    const n = evos.length + 1;
+    // évolution démarre depuis une copie du schéma courant, pour prolonger la progression
+    const clone = cloneSlotData(evos[curEvo].slot);
+    evos.push({ id:'e'+(n), label:'Évolution '+(n-1), slot: clone });
+    curEvo = evos.length - 1;
+    renderEvoTabs();
+    rebuildCanvasForCurrentSlot(false);
+  }
+  async function deleteEvo(i){
+    const evos = phases[curPhase].evolutions;
+    if(evos.length <= 1) return;
+    const ok = await openModal({ title:'Supprimer l\u2019évolution', message:'Supprimer "' + evos[i].label + '" ?', confirmLabel:'Supprimer', danger:true });
+    if(!ok) return;
+    evos.splice(i,1);
+    if(curEvo >= evos.length) curEvo = evos.length - 1;
+    renderEvoTabs();
+    rebuildCanvasForCurrentSlot(false);
+  }
+  async function renameEvo(i){
+    const evos = phases[curPhase].evolutions;
+    const val = await openModal({ title:'Nom de l\u2019évolution', type:'input', value: evos[i].label, confirmLabel:'OK' });
+    if(val !== false && val !== null && String(val).trim() !== ''){ evos[i].label = String(val).trim(); renderEvoTabs(); updatePrintTitleText(); }
+  }
+
+  // ============================================================
+  //  STOCKAGE — IndexedDB sur l'appareil.
+  //  Interface volontairement simple (all/get/put/del) : un stockage serveur
+  //  (PHP + SQLite) pourra la remplacer sans toucher au reste de l'appli.
+  // ============================================================
+  const LEGACY_DRAFT_KEY = 'volley-editeur-brouillon-v1';
+  const Store = (() => {
+    let db = null, memory = null;
+    const wrap = (r) => new Promise((res, rej) => { r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+    async function open(){
+      if(db || memory) return;
+      try{
+        if(!window.indexedDB) throw new Error('IndexedDB indisponible');
+        db = await new Promise((res, rej) => {
+          const r = indexedDB.open('volley-catalogue', 2);
+          r.onupgradeneeded = () => {
+            const d = r.result;
+            if(!d.objectStoreNames.contains('exercises')) d.createObjectStore('exercises', { keyPath: 'id' });
+            if(!d.objectStoreNames.contains('sessions')) d.createObjectStore('sessions', { keyPath: 'id' });
+          };
+          r.onsuccess = () => res(r.result);
+          r.onerror = () => rej(r.error);
+        });
+        // demande au navigateur de ne pas effacer les données en cas de manque de place
+        if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+      }catch(err){ memory = { exercises: new Map(), sessions: new Map() }; }
+    }
+    // name : 'exercises' (bibliothèque) ou 'sessions' (séances)
+    const os = (name, mode) => db.transaction(name, mode).objectStore(name);
+    return {
+      get persistent(){ return !!db; },
+      open,
+      async all(name = 'exercises'){ await open(); return memory ? [...memory[name].values()] : wrap(os(name, 'readonly').getAll()); },
+      async put(rec, name = 'exercises'){ await open(); if(memory){ memory[name].set(rec.id, rec); return; } await wrap(os(name, 'readwrite').put(rec)); },
+      async del(id, name = 'exercises'){ await open(); if(memory){ memory[name].delete(id); return; } await wrap(os(name, 'readwrite').delete(id)); },
+    };
+  })();
+
+  // ---------- Format d'un exercice ----------
+  function newId(){
+    return 'ex-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+  }
+  // Valide et nettoie un exercice (fichier .json, sauvegarde, brouillon). Lève une erreur si invalide.
+  function normalizeExercise(data){
+    if(!data || !Array.isArray(data.phases) || !data.phases.length) throw new Error('format invalide');
+    const f = data.fiche || {};
+    return {
+      version: 2,
+      fiche: {
+        nom: String(f.nom || ''), explication: String(f.explication || ''), reussite: String(f.reussite || ''),
+        tags: Array.isArray(f.tags) ? f.tags.map(t => String(t).trim()).filter(Boolean) : []
+      },
+      phases: data.phases.map((ph, i) => ({
+        label: ph.label || ('Phase ' + (i + 1)),
+        description: ph.description || '',
+        evolutions: (Array.isArray(ph.evolutions) && ph.evolutions.length ? ph.evolutions : [{ label: 'Base' }]).map((ev, j) => {
+          const sl = ev.slot || {};
+          return {
+            label: ev.label || (j ? 'Évolution ' + j : 'Base'),
+            slot: {
+              mode: sl.mode === 'half' ? 'half' : 'full',
+              side: sl.side === 'right' ? 'right' : 'left',
+              split: !!sl.split,
+              elements: Array.isArray(sl.elements) ? sl.elements : [],
+              counters: sl.counters || { 'player-a': 1, 'player-b': 1 }
+            }
+          };
+        })
+      }))
+    };
+  }
+  function makeRecord(data, id, createdAt){
+    const now = Date.now();
+    return { id: id || newId(), createdAt: createdAt || now, updatedAt: now, ...normalizeExercise(data) };
+  }
+  function blankRecord(){
+    return makeRecord({ phases: [{ label: 'Phase 1', evolutions: [{ label: 'Base', slot: { mode: 'full' } }] }] });
+  }
+  function isEmptyData(d){
+    const f = d.fiche;
+    if(f.nom || f.explication || f.reussite || (f.tags && f.tags.length)) return false;
+    if(d.phases.length > 1) return false;
+    return d.phases.every(ph => !ph.description && ph.evolutions.length === 1 && ph.evolutions.every(ev => !ev.slot.elements.length));
+  }
+  function norm(t){ return String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+  function downloadJson(obj, filename){
+    const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+
+  // ---------- Petits messages ----------
+  const toastEl = document.getElementById('toast');
+  let toastTimer = null;
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2800);
+  }
+
+  // ---------- Vues ----------
+  const libraryView = document.getElementById('libraryView');
+  const editorView = document.getElementById('editorView');
+  const seanceView = document.getElementById('seanceView');
+  function showView(v){
+    libraryView.classList.toggle('hidden', v !== 'library');
+    editorView.classList.toggle('hidden', v !== 'editor');
+    seanceView.classList.toggle('hidden', v !== 'seance');
+    showHint('');
+  }
+
+  // ============================================================
+  //  LIEN ÉDITEUR ↔ BIBLIOTHÈQUE
+  // ============================================================
+  const libCache = new Map();   // id → exercice
+  const seCache = new Map();    // id → séance
+  // Ce que l'éditeur modifie : un exercice de la bibliothèque, ou la copie d'un exercice dans une séance
+  let editCtx = null;           // { kind:'exercise', id, createdAt } | { kind:'item', seanceId, uid }
+  let lastSaved = '';
+  const editorSubtitle = document.querySelector('#editorView .title small');
+  const btnBackLabel = document.getElementById('btnBackLabel');
+
+  async function saveCurrent(){
+    if(!editCtx) return;
+    const data = buildExportData();
+    const str = JSON.stringify(data);
+    if(str === lastSaved) return;
+    lastSaved = str;
+    try{
+      if(editCtx.kind === 'exercise'){
+        const rec = { id: editCtx.id, createdAt: editCtx.createdAt, updatedAt: Date.now(), ...JSON.parse(str) };
+        libCache.set(rec.id, rec);
+        await Store.put(rec);
+      } else {
+        const se = seCache.get(editCtx.seanceId);
+        const item = se && se.items.find(it => it.uid === editCtx.uid);
+        if(!item) return;
+        item.exercise = JSON.parse(str);
+        item.updatedAt = Date.now();
+        se.updatedAt = Date.now();
+        await Store.put(se, 'sessions');
+      }
+    }catch(err){ toast("Impossible d'enregistrer sur cet appareil"); }
+  }
+  function autoSave(){ saveCurrent(); }
+
+  function openEditor(data, ctx){
+    editCtx = ctx;
+    const inSeance = ctx.kind === 'item';
+    editorSubtitle.textContent = inSeance ? "Copie dans la séance — l'exercice de la bibliothèque n'est pas modifié" : 'Enregistré automatiquement dans la bibliothèque';
+    btnBackLabel.textContent = inSeance ? 'Séance' : 'Bibliothèque';
+    btnNew.style.display = inSeance ? 'none' : '';
+    showView('editor');
+    applyData(JSON.parse(JSON.stringify(data)));
+    lastSaved = JSON.stringify(buildExportData());
+    setActiveTool('select');
+  }
+  function openExercise(rec){ openEditor(rec, { kind: 'exercise', id: rec.id, createdAt: rec.createdAt || Date.now() }); }
+
+  // Quitte l'éditeur : enregistre, ou retire un nouvel exercice resté vide
+  async function leaveCurrentExercise(){
+    if(!editCtx) return;
+    if(editCtx.kind === 'exercise' && isEmptyData(buildExportData())){
+      libCache.delete(editCtx.id);
+      try{ await Store.del(editCtx.id); }catch(err){}
+    } else {
+      await saveCurrent();
+    }
+    editCtx = null;
+  }
+  document.getElementById('btnBack').addEventListener('click', async () => {
+    const ctx = editCtx;
+    await leaveCurrentExercise();
+    if(ctx && ctx.kind === 'item'){ openSeance(ctx.seanceId); return; }
+    showView('library');
+    renderLibrary();
+  });
+  setInterval(() => { if(editCtx) saveCurrent(); }, 2000);
+  window.addEventListener('pagehide', () => saveCurrent());
+  document.addEventListener('visibilitychange', () => { if(document.hidden) saveCurrent(); });
+
+  // ============================================================
+  //  MINIATURES (image SVG autonome, couleurs du thème figées)
+  // ============================================================
+  const THEME = { '--court-fill':'#1F5C73', '--band':'#17485A', '--court-line':'#EFE8D8', '--gold':'#E3A939', '--ink':'#EFE8D8',
+                  '--team-a':'#4FA8D8', '--team-b':'#D8536F', '--cone':'#FF8A3D', '--cone-dark':'#B4531A' };
+  const PRINT_THEME = { '--court-fill':'#FFFFFF', '--band':'#F2F2F2', '--court-line':'#000000', '--gold':'#000000', '--ink':'#000000',
+                  '--team-a':'#FFFFFF', '--team-b':'#000000', '--cone':'#FFFFFF', '--cone-dark':'#FFFFFF' };
+  const thumbCache = new Map(); // id → { u: updatedAt, url }
+  function buildElementNode(d){
+    if(d.type === 'player-a' || d.type === 'player-b') return makePlayerEl(d.type, d.x, d.y, d.num);
+    if(d.type === 'ball') return makeBallEl(d.x, d.y);
+    if(d.type === 'cone') return makeConeEl(d.x, d.y);
+    if(d.type === 'zone-oval') return makeZoneEl('zone-oval', { x1:d.x1, y1:d.y1, x2:d.x2, y2:d.y2 }, d.label, d.color || DEFAULT_ZONE_COLOR);
+    if(d.type === 'zone-rect') return makeZoneEl('zone-rect', { points: d.points || [] }, d.label, d.color || DEFAULT_ZONE_COLOR);
+    if(d.type === 'arrow-move' || d.type === 'arrow-hit' || d.type === 'curve'){
+      const g = makeLineEl(d.type, d.x1, d.y1, d.x2, d.y2, d.cx, d.cy);
+      const h = g.querySelector('[data-role="handle"]');
+      if(h) h.remove();
+      return g;
+    }
+    return null;
+  }
+  function renderThumb(slot, forPrint){
+    const mode = slot.mode === 'half' ? 'half' : 'full';
+    const { w, h } = courtSize(mode);
+    const root = svgEl('svg', { xmlns: NS, width: w, height: h });
+    const style = svgEl('style', {});
+    style.textContent = '.el-player text{font-family:Oswald,Arial,sans-serif;font-weight:600;font-size:15px;fill:#0E141B}'
+      + ' .zone-label{font-family:Oswald,Arial,sans-serif;font-weight:600;font-size:13px;text-transform:uppercase}'
+      + (forPrint ? ' .el-player.team-b text{fill:#FFFFFF} .el-zone [data-role="main"]{fill:#FFFFFF !important;fill-opacity:.08 !important;stroke:#000000 !important} .el-zone .zone-label{fill:#000000 !important}' : '');
+    root.appendChild(style);
+    ensureArrowMarkers();
+    const defs = svgEl('defs', {});
+    defs.innerHTML = svg.querySelector('defs').innerHTML;
+    root.appendChild(defs);
+    root.appendChild(svgEl('rect', { x: 0, y: 0, width: mode === 'full' ? FULL_W : HALF_W, height: mode === 'full' ? FULL_H : HALF_H, fill: 'var(--court-fill)' }));
+    if(mode === 'half') root.appendChild(svgEl('rect', { x: 0, y: -BAND, width: HALF_W, height: BAND, fill: 'var(--band)' }));
+    const lines = svgEl('g', {});
+    root.appendChild(lines);
+    const prev = drawLayer;
+    drawLayer = lines;
+    try{ drawCourtLines(mode, root); if(slot.split) drawSplitLine(mode); }
+    finally{ drawLayer = prev; }
+    const zl = svgEl('g', {}), el = svgEl('g', {});
+    root.appendChild(zl); root.appendChild(el);
+    (slot.elements || []).forEach(d => {
+      const node = buildElementNode(d);
+      if(node) (d.type === 'zone-oval' || d.type === 'zone-rect' ? zl : el).appendChild(node);
+    });
+    let str = new XMLSerializer().serializeToString(root);
+    str = str.split(' filter="url(#elShadow)"').join('');
+    const pal = forPrint ? PRINT_THEME : THEME;
+    Object.keys(pal).forEach(k => { str = str.split('var(' + k + ')').join(pal[k]); });
+    if(forPrint) str = str.split('#0E141B').join('#000000');
+    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(str);
+  }
+  function thumbUrl(rec){
+    const c = thumbCache.get(rec.id);
+    if(c && c.u === rec.updatedAt) return c.url;
+    let url = '';
+    try{ url = renderThumb(rec.phases[0].evolutions[0].slot); }catch(err){ url = ''; }
+    thumbCache.set(rec.id, { u: rec.updatedAt, url });
+    return url;
+  }
+
+  // ============================================================
+  //  VUE BIBLIOTHÈQUE
+  // ============================================================
+  const libGrid = document.getElementById('libGrid');
+  const libEmpty = document.getElementById('libEmpty');
+  const libCount = document.getElementById('libCount');
+  const libTags = document.getElementById('libTags');
+  const libSearch = document.getElementById('libSearch');
+  const libSort = document.getElementById('libSort');
+  const libFile = document.getElementById('libFile');
+  const libState = { q: '', tags: new Set(), sort: 'recent' };
+
+  function allTags(){
+    const m = new Map();
+    libCache.forEach(r => (r.fiche.tags || []).forEach(t => { const k = norm(t); if(k && !m.has(k)) m.set(k, t); }));
+    return [...m.entries()].sort((a, b) => a[0].localeCompare(b[0], 'fr'));
+  }
+  function plural(n, one, many){ return n + ' ' + (n > 1 ? many : one); }
+
+  function renderLibrary(){
+    const isSe = libState.tab === 'se';
+    exFilters.style.display = isSe ? 'none' : '';
+    libGrid.style.display = isSe ? 'none' : '';
+    seGrid.style.display = isSe ? '' : 'none';
+    document.getElementById('libNew').style.display = isSe ? 'none' : '';
+    document.getElementById('libNewSe').style.display = isSe ? '' : 'none';
+    if(isSe){ renderSeanceList(); return; }
+    const recs = [...libCache.values()];
+    libCount.textContent = plural(recs.length, 'exercice', 'exercices');
+
+    // Filtres par tag (ET entre les tags sélectionnés)
+    const tags = allTags();
+    [...libState.tags].forEach(k => { if(!tags.some(t => t[0] === k)) libState.tags.delete(k); });
+    libTags.innerHTML = '';
+    tags.forEach(([k, label]) => {
+      const c = document.createElement('button');
+      c.className = 'chip' + (libState.tags.has(k) ? ' on' : '');
+      c.textContent = label;
+      c.addEventListener('click', () => {
+        if(libState.tags.has(k)) libState.tags.delete(k); else libState.tags.add(k);
+        renderLibrary();
+      });
+      libTags.appendChild(c);
+    });
+    if(libState.tags.size){
+      const c = document.createElement('button');
+      c.className = 'chip clear';
+      c.textContent = 'Effacer les filtres';
+      c.addEventListener('click', () => { libState.tags.clear(); renderLibrary(); });
+      libTags.appendChild(c);
+    }
+
+    // Recherche : tous les mots doivent apparaître (sans tenir compte des accents)
+    const words = norm(libState.q).split(/\s+/).filter(Boolean);
+    let list = recs.filter(r => {
+      const hay = norm([r.fiche.nom, r.fiche.explication, r.fiche.reussite, (r.fiche.tags || []).join(' '),
+                        r.phases.map(p => p.label + ' ' + (p.description || '')).join(' ')].join(' '));
+      if(!words.every(w => hay.includes(w))) return false;
+      const rt = new Set((r.fiche.tags || []).map(norm));
+      return [...libState.tags].every(k => rt.has(k));
+    });
+    if(libState.sort === 'az'){
+      list.sort((a, b) => {
+        if(!a.fiche.nom !== !b.fiche.nom) return a.fiche.nom ? -1 : 1;
+        return a.fiche.nom.localeCompare(b.fiche.nom, 'fr', { sensitivity: 'base' });
+      });
+    } else {
+      list.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+    }
+
+    libGrid.innerHTML = '';
+    list.forEach(r => libGrid.appendChild(buildCard(r)));
+
+    if(!recs.length){
+      libEmpty.innerHTML = '<strong>Ta bibliothèque est vide</strong>Crée ton premier exercice avec « Nouvel exercice », ou importe des fichiers .json (tu peux en sélectionner plusieurs à la fois).';
+      libEmpty.style.display = 'block';
+    } else if(!list.length){
+      libEmpty.innerHTML = '<strong>Aucun résultat</strong>Aucun exercice ne correspond à ta recherche ou aux tags choisis.';
+      libEmpty.style.display = 'block';
+    } else {
+      libEmpty.style.display = 'none';
+    }
+  }
+
+  function buildCard(r){
+    const card = document.createElement('div');
+    card.className = 'card';
+    const th = document.createElement('div');
+    th.className = 'card-thumb';
+    const url = thumbUrl(r);
+    if(url){ const img = document.createElement('img'); img.src = url; img.alt = ''; th.appendChild(img); }
+    card.appendChild(th);
+
+    const body = document.createElement('div');
+    body.className = 'card-body';
+    const name = document.createElement('div');
+    name.className = 'card-name' + (r.fiche.nom ? '' : ' untitled');
+    name.textContent = r.fiche.nom || 'Sans nom';
+    body.appendChild(name);
+    if(r.fiche.tags && r.fiche.tags.length){
+      const tg = document.createElement('div');
+      tg.className = 'card-tags';
+      r.fiche.tags.forEach(t => { const s = document.createElement('span'); s.textContent = t; tg.appendChild(s); });
+      body.appendChild(tg);
+    }
+    const foot = document.createElement('div');
+    foot.className = 'card-foot';
+    const meta = document.createElement('div');
+    meta.className = 'card-meta';
+    const nEvo = r.phases.reduce((n, p) => n + p.evolutions.length, 0);
+    const parts = [r.phases[0].evolutions[0].slot.mode === 'half' ? 'Demi-terrain' : 'Terrain complet', plural(r.phases.length, 'phase', 'phases')];
+    if(nEvo > r.phases.length) parts.push(plural(nEvo - r.phases.length, 'évolution', 'évolutions'));
+    meta.textContent = parts.join(' · ');
+    foot.appendChild(meta);
+    const more = document.createElement('button');
+    more.className = 'card-more';
+    more.textContent = '⋯';
+    more.setAttribute('aria-label', 'Actions');
+    more.addEventListener('click', (e) => { e.stopPropagation(); openSheet(r.id); });
+    foot.appendChild(more);
+    body.appendChild(foot);
+    card.appendChild(body);
+    card.addEventListener('click', () => { const rec = libCache.get(r.id); if(rec) openExercise(rec); });
+    return card;
+  }
+
+  // ---------- Menu d'actions d'une carte ----------
+  const sheetOverlay = document.getElementById('sheetOverlay');
+  const sheetButtons = document.getElementById('sheetButtons');
+  function closeSheet(){ sheetOverlay.classList.remove('show'); }
+  document.getElementById('sheetCancel').addEventListener('click', closeSheet);
+  sheetOverlay.addEventListener('click', (e) => { if(e.target === sheetOverlay) closeSheet(); });
+  function openSheet(id){
+    const r = libCache.get(id);
+    if(!r) return;
+    document.getElementById('sheetTitle').textContent = r.fiche.nom || 'Sans nom';
+    sheetButtons.innerHTML = '';
+    [
+      ['Ouvrir', () => openExercise(libCache.get(id))],
+      ['Dupliquer', () => duplicateExercise(id)],
+      ['Exporter .json', () => { const rec = libCache.get(id); downloadJson(normalizeExercise(rec), (slug(rec.fiche.nom) || 'exercice-volley') + '.json'); }],
+      ['Supprimer', () => deleteExercise(id), true],
+    ].forEach(([label, fn, danger]) => {
+      const b = document.createElement('button');
+      b.className = 'sheet-btn' + (danger ? ' danger' : '');
+      b.textContent = label;
+      b.addEventListener('click', () => { closeSheet(); fn(); });
+      sheetButtons.appendChild(b);
+    });
+    sheetOverlay.classList.add('show');
+  }
+  async function duplicateExercise(id){
+    const src = libCache.get(id);
+    if(!src) return;
+    const copy = makeRecord(JSON.parse(JSON.stringify(src)));
+    copy.fiche.nom = (src.fiche.nom || 'Sans nom') + ' (copie)';
+    await Store.put(copy);
+    libCache.set(copy.id, copy);
+    renderLibrary();
+    toast('Exercice dupliqué');
+  }
+  async function deleteExercise(id){
+    const r = libCache.get(id);
+    if(!r) return;
+    const ok = await openModal({ title: "Supprimer l'exercice", message: '« ' + (r.fiche.nom || 'Sans nom') + ' » sera retiré de la bibliothèque. Cette action est définitive.', confirmLabel: 'Supprimer', danger: true });
+    if(!ok) return;
+    await Store.del(id);
+    libCache.delete(id);
+    thumbCache.delete(id);
+    renderLibrary();
+    toast('Exercice supprimé');
+  }
+
+  // ---------- Barre du haut ----------
+  document.getElementById('libNew').addEventListener('click', () => openExercise(blankRecord()));
+  libSearch.addEventListener('input', () => { libState.q = libSearch.value; renderLibrary(); });
+  libSort.addEventListener('change', () => { libState.sort = libSort.value; renderLibrary(); });
+
+  // Sauvegarde complète (un seul fichier, à garder hors de l'iPad)
+  document.getElementById('libBackup').addEventListener('click', () => {
+    const recs = [...libCache.values()];
+    const ses = [...seCache.values()].filter(se => !isEmptySeance(se));
+    if(!recs.length && !ses.length){ toast('Rien à sauvegarder pour le moment'); return; }
+    const d = new Date();
+    downloadJson({ type: 'bibliotheque-volley', version: 2, exportedAt: d.toISOString(), exercises: recs, seances: ses }, 'bibliotheque-volley-' + todayIso() + '.json');
+    toast(plural(recs.length, 'exercice', 'exercices') + ' et ' + plural(ses.length, 'séance', 'séances') + ' sauvegardés');
+  });
+
+  // Import : un ou plusieurs exercices .json, ou une sauvegarde complète
+  document.getElementById('libImport').addEventListener('click', () => libFile.click());
+  libFile.addEventListener('change', async () => {
+    const files = [...(libFile.files || [])];
+    libFile.value = '';
+    if(files.length) await importFiles(files);
+  });
+  async function importFiles(files){
+    let added = 0, updated = 0, failed = 0, seAdded = 0;
+    for(const f of files){
+      let data;
+      try{ data = JSON.parse(await f.text()); }catch(err){ failed++; continue; }
+      if(data && Array.isArray(data.seances)){
+        for(const sx of data.seances){
+          try{
+            const se = normalizeSeance(sx, true);
+            await Store.put(se, 'sessions');
+            seCache.set(se.id, se);
+            seAdded++;
+          }catch(err){ failed++; }
+        }
+      }
+      if(data && Array.isArray(data.exercises)){
+        // sauvegarde complète : on restaure en gardant les identifiants
+        for(const ex of data.exercises){
+          try{
+            const rec = makeRecord(ex, ex.id, ex.createdAt);
+            if(ex.updatedAt) rec.updatedAt = ex.updatedAt;
+            const existed = libCache.has(rec.id);
+            await Store.put(rec);
+            libCache.set(rec.id, rec);
+            thumbCache.delete(rec.id);
+            if(existed) updated++; else added++;
+          }catch(err){ failed++; }
+        }
+      } else if(!(data && Array.isArray(data.seances))){
+        try{
+          const rec = makeRecord(data);
+          await Store.put(rec);
+          libCache.set(rec.id, rec);
+          added++;
+        }catch(err){ failed++; }
+      }
+    }
+    renderLibrary();
+    const msg = [];
+    if(added) msg.push(plural(added, 'exercice importé', 'exercices importés'));
+    if(updated) msg.push(plural(updated, 'mis à jour', 'mis à jour'));
+    if(seAdded) msg.push(plural(seAdded, 'séance restaurée', 'séances restaurées'));
+    if(failed) msg.push(plural(failed, 'fichier non reconnu', 'fichiers non reconnus'));
+    toast(msg.join(' · ') || 'Aucun exercice importé');
+  }
+
+  // Ancien brouillon (version à exercice unique) → versé dans la bibliothèque
+  async function migrateLegacyDraft(){
+    try{
+      const s = localStorage.getItem(LEGACY_DRAFT_KEY);
+      if(!s) return;
+      const rec = makeRecord(JSON.parse(s));
+      if(!isEmptyData(rec)){ await Store.put(rec); libCache.set(rec.id, rec); }
+      localStorage.removeItem(LEGACY_DRAFT_KEY);
+    }catch(err){ /* brouillon illisible : ignoré */ }
+  }
+
+  // ============================================================
+  //  SÉANCES — en-tête + copies d'exercices de la bibliothèque
+  // ============================================================
+  const seGrid = document.getElementById('seGrid');
+  const tabEx = document.getElementById('tabEx');
+  const tabSe = document.getElementById('tabSe');
+  const exFilters = document.getElementById('exFilters');
+  let currentSeanceId = null;
+
+  function todayIso(){
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function formatDate(iso, long){
+    if(!iso) return '';
+    const [y, m, d] = iso.split('-').map(Number);
+    const dt = new Date(y, (m || 1) - 1, d || 1);
+    try{
+      return dt.toLocaleDateString('fr-BE', long ? { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' } : { day: '2-digit', month: '2-digit', year: 'numeric' });
+    }catch(err){ return iso; }
+  }
+  function seanceName(se){ return se.theme || 'Séance'; }
+  // Copie indépendante d'un exercice de la bibliothèque, pour une séance
+  function makeItem(rec){
+    return { uid: newId(), sourceId: rec.id || null, exercise: normalizeExercise(JSON.parse(JSON.stringify(rec))), resultat: '', updatedAt: Date.now() };
+  }
+  function normalizeSeance(data, keepId){
+    const now = Date.now();
+    return {
+      id: (keepId && data.id) || newId(),
+      createdAt: (keepId && data.createdAt) || now,
+      updatedAt: (keepId && data.updatedAt) || now,
+      date: /^\d{4}-\d{2}-\d{2}$/.test(data.date || '') ? data.date : todayIso(),
+      categorie: String(data.categorie || ''), theme: String(data.theme || ''), remarque: String(data.remarque || ''),
+      items: (Array.isArray(data.items) ? data.items : []).map(it => ({
+        uid: it.uid || newId(), sourceId: it.sourceId || null,
+        exercise: normalizeExercise(it.exercise), resultat: String(it.resultat || ''), updatedAt: it.updatedAt || now
+      }))
+    };
+  }
+  function isEmptySeance(se){ return !se.items.length && !se.theme && !se.remarque; }
+  async function putSeance(se){
+    se.updatedAt = Date.now();
+    seCache.set(se.id, se);
+    try{ await Store.put(se, 'sessions'); }catch(err){ toast("Impossible d'enregistrer sur cet appareil"); }
+  }
+
+  // ---------- Onglets Exercices / Séances ----------
+  libState.tab = 'ex';
+  function setTab(t){
+    libState.tab = t;
+    tabEx.classList.toggle('active', t === 'ex');
+    tabSe.classList.toggle('active', t === 'se');
+    renderLibrary();
+  }
+  tabEx.addEventListener('click', () => setTab('ex'));
+  tabSe.addEventListener('click', () => setTab('se'));
+
+  function renderSeanceList(){
+    const list = [...seCache.values()].sort((a, b) => (b.date || '').localeCompare(a.date || '') || (b.updatedAt - a.updatedAt));
+    libCount.textContent = plural(list.length, 'séance', 'séances');
+    seGrid.innerHTML = '';
+    list.forEach(se => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      const th = document.createElement('div');
+      th.className = 'card-thumb se-card-thumb';
+      if(se.items.length){
+        const url = renderThumbCached('se:' + se.id + ':' + se.items[0].uid, se.items[0].updatedAt, se.items[0].exercise.phases[0].evolutions[0].slot);
+        if(url){ const img = document.createElement('img'); img.src = url; img.alt = ''; th.appendChild(img); }
+      }
+      card.appendChild(th);
+      const body = document.createElement('div');
+      body.className = 'card-body';
+      const name = document.createElement('div');
+      name.className = 'card-name';
+      name.textContent = formatDate(se.date, true);
+      body.appendChild(name);
+      const sub = document.createElement('div');
+      sub.className = 'card-meta';
+      sub.style.color = 'var(--ink)';
+      sub.textContent = [se.theme, se.categorie].filter(Boolean).join(' · ') || 'Sans thème';
+      body.appendChild(sub);
+      const foot = document.createElement('div');
+      foot.className = 'card-foot';
+      const meta = document.createElement('div');
+      meta.className = 'card-meta';
+      meta.textContent = plural(se.items.length, 'exercice', 'exercices');
+      foot.appendChild(meta);
+      const more = document.createElement('button');
+      more.className = 'card-more';
+      more.textContent = '⋯';
+      more.addEventListener('click', (e) => { e.stopPropagation(); openSeanceSheet(se.id); });
+      foot.appendChild(more);
+      body.appendChild(foot);
+      card.appendChild(body);
+      card.addEventListener('click', () => openSeance(se.id));
+      seGrid.appendChild(card);
+    });
+    if(!list.length){
+      libEmpty.innerHTML = '<strong>Aucune séance</strong>Crée une séance avec « Nouvelle séance », puis ajoute des exercices depuis ta bibliothèque.';
+      libEmpty.style.display = 'block';
+    } else libEmpty.style.display = 'none';
+  }
+  // Miniature avec cache par clé (exercices copiés dans les séances)
+  function renderThumbCached(key, u, slot, forPrint){
+    const c = thumbCache.get(key);
+    if(c && c.u === u) return c.url;
+    let url = '';
+    try{ url = renderThumb(slot, forPrint); }catch(err){}
+    thumbCache.set(key, { u, url });
+    return url;
+  }
+
+  function openSeanceSheet(id){
+    const se = seCache.get(id);
+    if(!se) return;
+    document.getElementById('sheetTitle').textContent = formatDate(se.date, true) + (se.theme ? ' — ' + se.theme : '');
+    sheetButtons.innerHTML = '';
+    [
+      ['Ouvrir', () => openSeance(id)],
+      ['Imprimer / PDF', () => printSeance(id)],
+      ["Dupliquer (pour aujourd'hui)", () => duplicateSeance(id)],
+      ['Supprimer', () => deleteSeance(id), true],
+    ].forEach(([label, fn, danger]) => {
+      const b = document.createElement('button');
+      b.className = 'sheet-btn' + (danger ? ' danger' : '');
+      b.textContent = label;
+      b.addEventListener('click', () => { closeSheet(); fn(); });
+      sheetButtons.appendChild(b);
+    });
+    sheetOverlay.classList.add('show');
+  }
+  async function duplicateSeance(id){
+    const src = seCache.get(id);
+    if(!src) return;
+    const copy = normalizeSeance(JSON.parse(JSON.stringify(src)), false);
+    copy.date = todayIso();
+    copy.items.forEach(it => { it.uid = newId(); it.resultat = ''; });
+    await putSeance(copy);
+    renderLibrary();
+    toast('Séance dupliquée');
+  }
+  async function deleteSeance(id){
+    const se = seCache.get(id);
+    if(!se) return;
+    const ok = await openModal({ title: 'Supprimer la séance', message: 'La séance du ' + formatDate(se.date, true) + ' sera supprimée. Les exercices de la bibliothèque ne sont pas touchés.', confirmLabel: 'Supprimer', danger: true });
+    if(!ok) return;
+    seCache.delete(id);
+    try{ await Store.del(id, 'sessions'); }catch(err){}
+    renderLibrary();
+    toast('Séance supprimée');
+  }
+  document.getElementById('libNewSe').addEventListener('click', async () => {
+    // reprend la catégorie de la séance la plus récente
+    const last = [...seCache.values()].sort((a, b) => b.updatedAt - a.updatedAt)[0];
+    const se = normalizeSeance({ date: todayIso(), categorie: last ? last.categorie : '' }, false);
+    seCache.set(se.id, se);   // enregistrée dès la première modification
+    openSeance(se.id);
+  });
+
+  // ---------- Écran d'une séance ----------
+  const seDate = document.getElementById('seDate');
+  const seCat = document.getElementById('seCat');
+  const seTheme = document.getElementById('seTheme');
+  const seRem = document.getElementById('seRem');
+  const seItems = document.getElementById('seItems');
+  const seEmpty = document.getElementById('seEmpty');
+  const seTitle = document.getElementById('seTitle');
+
+  function openSeance(id){
+    const se = seCache.get(id);
+    if(!se){ showView('library'); renderLibrary(); return; }
+    currentSeanceId = id;
+    seDate.value = se.date;
+    seCat.value = se.categorie;
+    seTheme.value = se.theme;
+    seRem.value = se.remarque;
+    const cats = [...new Set([...seCache.values()].map(x => x.categorie).filter(Boolean))];
+    document.getElementById('seCatList').innerHTML = cats.map(c => '<option value="' + c.replace(/"/g, '&quot;') + '">').join('');
+    showView('seance');
+    renderSeance();
+  }
+  function curSe(){ return seCache.get(currentSeanceId); }
+  function updateSeTitle(){
+    const se = curSe();
+    if(se) seTitle.textContent = formatDate(se.date, true) + (se.theme ? ' — ' + se.theme : '');
+  }
+  [[seDate, 'date'], [seCat, 'categorie'], [seTheme, 'theme'], [seRem, 'remarque']].forEach(([input, key]) => {
+    input.addEventListener('input', () => {
+      const se = curSe();
+      if(!se) return;
+      se[key] = key === 'date' ? (input.value || todayIso()) : input.value;
+      updateSeTitle();
+      putSeance(se);
+    });
+  });
+
+  function renderSeance(){
+    const se = curSe();
+    if(!se) return;
+    updateSeTitle();
+    seItems.innerHTML = '';
+    se.items.forEach((it, i) => {
+      const ex = it.exercise;
+      const row = document.createElement('div');
+      row.className = 'se-item';
+
+      const handle = document.createElement('div');
+      handle.className = 'se-handle';
+      handle.setAttribute('aria-label', 'Glisser pour changer l\'ordre');
+      handle.innerHTML = '<svg width="14" height="22" viewBox="0 0 14 22" fill="currentColor"><circle cx="4" cy="4" r="2"/><circle cx="10" cy="4" r="2"/><circle cx="4" cy="11" r="2"/><circle cx="10" cy="11" r="2"/><circle cx="4" cy="18" r="2"/><circle cx="10" cy="18" r="2"/></svg>';
+      handle.addEventListener('pointerdown', (e) => startItemDrag(e, row, i));
+      row.appendChild(handle);
+
+      const num = document.createElement('div');
+      num.className = 'se-num';
+      num.textContent = i + 1;
+      row.appendChild(num);
+
+      const th = document.createElement('div');
+      th.className = 'se-thumb';
+      th.title = 'Modifier le schéma';
+      const url = renderThumbCached('it:' + it.uid, it.updatedAt, ex.phases[0].evolutions[0].slot);
+      if(url){ const img = document.createElement('img'); img.src = url; img.alt = ''; th.appendChild(img); }
+      th.addEventListener('click', () => editItem(it.uid));
+      row.appendChild(th);
+
+      const main = document.createElement('div');
+      main.className = 'se-main';
+      const name = document.createElement('div');
+      name.className = 'se-name';
+      name.textContent = ex.fiche.nom || 'Sans nom';
+      main.appendChild(name);
+      if(ex.fiche.explication){
+        const e = document.createElement('div');
+        e.className = 'se-expl';
+        e.textContent = ex.fiche.explication;
+        main.appendChild(e);
+      }
+      if(ex.fiche.reussite){
+        const c = document.createElement('div');
+        c.className = 'se-crit';
+        c.innerHTML = '<b>Réussite :</b> ';
+        c.appendChild(document.createTextNode(ex.fiche.reussite));
+        main.appendChild(c);
+      }
+      const res = document.createElement('div');
+      res.className = 'se-res';
+      const lab = document.createElement('span');
+      lab.className = 'field-label';
+      lab.style.margin = '0';
+      lab.textContent = 'Résultat du jour';
+      const inp = document.createElement('input');
+      inp.className = 'modal-input';
+      inp.placeholder = 'Ex. 6/10, à revoir…';
+      inp.value = it.resultat || '';
+      inp.addEventListener('input', () => { it.resultat = inp.value; putSeance(se); });
+      res.appendChild(lab); res.appendChild(inp);
+      main.appendChild(res);
+      row.appendChild(main);
+
+      const act = document.createElement('div');
+      act.className = 'se-actions';
+      const more = document.createElement('button'); more.className = 'mini-btn'; more.textContent = '⋯';
+      more.addEventListener('click', () => openItemSheet(it.uid));
+      act.appendChild(more);
+      row.appendChild(act);
+
+      seItems.appendChild(row);
+    });
+    seEmpty.style.display = se.items.length ? 'none' : 'block';
+    // prépare la feuille imprimable à l'avance (images prêtes au moment du clic)
+    if(se.items.length) buildPrintSheet(se);
+  }
+  // Glisser-déposer par la poignée (doigt, stylet ou souris)
+  function startItemDrag(e, row, index){
+    const se = curSe();
+    if(!se || se.items.length < 2) return;
+    e.preventDefault();
+    const handle = e.currentTarget;
+    handle.setPointerCapture(e.pointerId);
+    const scroller = seanceView.querySelector('.lib-body');
+    const rows = [...seItems.querySelectorAll('.se-item')];
+    const tops = rows.map(r => r.offsetTop);
+    const heights = rows.map(r => r.offsetHeight);
+    const gap = 10;
+    const step = heights[index] + gap;
+    const yIn = (clientY) => clientY - seItems.getBoundingClientRect().top;
+    const y0 = yIn(e.clientY);
+    let target = index;
+    row.classList.add('dragging');
+
+    function onMove(ev){
+      // défilement automatique près des bords
+      const br = scroller.getBoundingClientRect();
+      if(ev.clientY < br.top + 60) scroller.scrollTop -= 12;
+      else if(ev.clientY > br.bottom - 60) scroller.scrollTop += 12;
+      const dy = yIn(ev.clientY) - y0;
+      row.style.transform = 'translateY(' + dy + 'px)';
+      const center = tops[index] + heights[index] / 2 + dy;
+      let t = 0;
+      rows.forEach((r, k) => { if(k !== index && center > tops[k] + heights[k] / 2) t++; });
+      target = t;
+      rows.forEach((r, k) => {
+        if(k === index) return;
+        let shift = 0;
+        if(index < target && k > index && k <= target) shift = -step;
+        else if(index > target && k >= target && k < index) shift = step;
+        r.style.transform = shift ? 'translateY(' + shift + 'px)' : '';
+      });
+    }
+    function onUp(){
+      handle.removeEventListener('pointermove', onMove);
+      handle.removeEventListener('pointerup', onUp);
+      handle.removeEventListener('pointercancel', onUp);
+      rows.forEach(r => { r.style.transform = ''; });
+      row.classList.remove('dragging');
+      if(target !== index){
+        const [moved] = se.items.splice(index, 1);
+        se.items.splice(target, 0, moved);
+        putSeance(se);
+      }
+      renderSeance();
+    }
+    handle.addEventListener('pointermove', onMove);
+    handle.addEventListener('pointerup', onUp);
+    handle.addEventListener('pointercancel', onUp);
+  }
+  function moveItem(i, dir){
+    const se = curSe();
+    const j = i + dir;
+    if(!se || j < 0 || j >= se.items.length) return;
+    [se.items[i], se.items[j]] = [se.items[j], se.items[i]];
+    putSeance(se);
+    renderSeance();
+  }
+  function editItem(uid){
+    const se = curSe();
+    const it = se && se.items.find(x => x.uid === uid);
+    if(!it) return;
+    openEditor(it.exercise, { kind: 'item', seanceId: se.id, uid });
+  }
+  function openItemSheet(uid){
+    const se = curSe();
+    const it = se && se.items.find(x => x.uid === uid);
+    if(!it) return;
+    document.getElementById('sheetTitle').textContent = it.exercise.fiche.nom || 'Sans nom';
+    sheetButtons.innerHTML = '';
+    [
+      ['Modifier pour cette séance', () => editItem(uid)],
+      ['Enregistrer cette version comme nouvel exercice', () => saveItemToLibrary(uid)],
+      ['Retirer de la séance', () => removeItem(uid), true],
+    ].forEach(([label, fn, danger]) => {
+      const b = document.createElement('button');
+      b.className = 'sheet-btn' + (danger ? ' danger' : '');
+      b.textContent = label;
+      b.addEventListener('click', () => { closeSheet(); fn(); });
+      sheetButtons.appendChild(b);
+    });
+    sheetOverlay.classList.add('show');
+  }
+  async function saveItemToLibrary(uid){
+    const se = curSe();
+    const it = se && se.items.find(x => x.uid === uid);
+    if(!it) return;
+    const rec = makeRecord(JSON.parse(JSON.stringify(it.exercise)));
+    rec.fiche.nom = (rec.fiche.nom || 'Sans nom') + ' (variante)';
+    await Store.put(rec);
+    libCache.set(rec.id, rec);
+    toast('Ajouté à la bibliothèque : « ' + rec.fiche.nom + ' »');
+  }
+  async function removeItem(uid){
+    const se = curSe();
+    if(!se) return;
+    const it = se.items.find(x => x.uid === uid);
+    const ok = await openModal({ title: 'Retirer de la séance', message: '« ' + ((it && it.exercise.fiche.nom) || 'Sans nom') + ' » sera retiré de cette séance. L\'exercice reste dans la bibliothèque.', confirmLabel: 'Retirer', danger: true });
+    if(!ok) return;
+    se.items = se.items.filter(x => x.uid !== uid);
+    await putSeance(se);
+    renderSeance();
+  }
+  document.getElementById('seBack').addEventListener('click', async () => {
+    const se = curSe();
+    if(se && isEmptySeance(se)){
+      seCache.delete(se.id);
+      try{ await Store.del(se.id, 'sessions'); }catch(err){}
+    }
+    currentSeanceId = null;
+    showView('library');
+    setTab('se');
+  });
+
+  // ---------- Choix des exercices à ajouter ----------
+  const pickerOverlay = document.getElementById('pickerOverlay');
+  const pickSearch = document.getElementById('pickSearch');
+  const pickTags = document.getElementById('pickTags');
+  const pickList = document.getElementById('pickList');
+  const pickConfirm = document.getElementById('pickConfirm');
+  const pickState = { q: '', tags: new Set(), selected: [] };
+  document.getElementById('seAdd').addEventListener('click', () => {
+    if(!libCache.size){ toast("La bibliothèque est vide : crée d'abord des exercices"); return; }
+    pickState.q = ''; pickState.tags.clear(); pickState.selected = [];
+    pickSearch.value = '';
+    renderPicker();
+    pickerOverlay.classList.add('show');
+  });
+  document.getElementById('pickCancel').addEventListener('click', () => pickerOverlay.classList.remove('show'));
+  pickSearch.addEventListener('input', () => { pickState.q = pickSearch.value; renderPicker(); });
+  function renderPicker(){
+    pickTags.innerHTML = '';
+    allTags().forEach(([k, label]) => {
+      const c = document.createElement('button');
+      c.className = 'chip' + (pickState.tags.has(k) ? ' on' : '');
+      c.textContent = label;
+      c.addEventListener('click', () => { if(pickState.tags.has(k)) pickState.tags.delete(k); else pickState.tags.add(k); renderPicker(); });
+      pickTags.appendChild(c);
+    });
+    const words = norm(pickState.q).split(/\s+/).filter(Boolean);
+    const list = [...libCache.values()].filter(r => {
+      const hay = norm([r.fiche.nom, r.fiche.explication, (r.fiche.tags || []).join(' ')].join(' '));
+      if(!words.every(w => hay.includes(w))) return false;
+      const rt = new Set((r.fiche.tags || []).map(norm));
+      return [...pickState.tags].every(k => rt.has(k));
+    }).sort((a, b) => (a.fiche.nom || '~').localeCompare(b.fiche.nom || '~', 'fr', { sensitivity: 'base' }));
+    pickList.innerHTML = '';
+    list.forEach(r => {
+      const row = document.createElement('div');
+      const pos = pickState.selected.indexOf(r.id);
+      row.className = 'pick-row' + (pos >= 0 ? ' on' : '');
+      const img = document.createElement('img');
+      img.src = thumbUrl(r); img.alt = '';
+      const nm = document.createElement('div');
+      nm.className = 'pick-name';
+      nm.textContent = r.fiche.nom || 'Sans nom';
+      const ord = document.createElement('div');
+      ord.className = 'pick-order';
+      ord.textContent = pos >= 0 ? pos + 1 : '';
+      row.appendChild(img); row.appendChild(nm); row.appendChild(ord);
+      row.addEventListener('click', () => {
+        const k = pickState.selected.indexOf(r.id);
+        if(k >= 0) pickState.selected.splice(k, 1); else pickState.selected.push(r.id);
+        renderPicker();
+      });
+      pickList.appendChild(row);
+    });
+    if(!list.length) pickList.innerHTML = '<div class="lib-empty" style="padding:30px 10px">Aucun exercice ne correspond.</div>';
+    const n = pickState.selected.length;
+    pickConfirm.textContent = n ? 'Ajouter (' + n + ')' : 'Ajouter';
+    pickConfirm.disabled = !n;
+    pickConfirm.style.opacity = n ? '' : '.4';
+  }
+  pickConfirm.addEventListener('click', async () => {
+    const se = curSe();
+    if(!se || !pickState.selected.length) return;
+    pickState.selected.forEach(id => { const r = libCache.get(id); if(r) se.items.push(makeItem(r)); });
+    const n = pickState.selected.length;
+    pickerOverlay.classList.remove('show');
+    await putSeance(se);
+    renderSeance();
+    toast(plural(n, 'exercice ajouté', 'exercices ajoutés') + ' (copies)');
+  });
+
+  // ---------- Feuille imprimée / PDF (format de la feuille papier) ----------
+  const printSheet = document.getElementById('printSheet');
+  function mk(tag, cls, text){
+    const e = document.createElement(tag);
+    if(cls) e.className = cls;
+    if(text !== undefined) e.textContent = text;
+    return e;
+  }
+  function buildPrintSheet(se){
+    printSheet.innerHTML = '';
+    // En-tête : titre, thème, catégorie
+    const top = mk('div', 'ps-top');
+    const left = mk('div');
+    left.appendChild(mk('div', 'ps-kicker', 'Séance d\'entraînement'));
+    left.appendChild(mk('div', 'ps-title ps-ttl', formatDate(se.date, true)));
+    if(se.theme){
+      const th = mk('div', 'ps-theme');
+      th.appendChild(mk('span', '', 'Thème : '));
+      th.appendChild(mk('b', '', se.theme));
+      left.appendChild(th);
+    }
+    top.appendChild(left);
+    const right = mk('div', 'ps-right');
+    if(se.categorie) right.appendChild(mk('div', 'ps-pill', se.categorie));
+    right.appendChild(mk('div', 'ps-count', plural(se.items.length, 'exercice', 'exercices')));
+    top.appendChild(right);
+    printSheet.appendChild(top);
+
+    if(se.remarque){
+      const rem = mk('div', 'ps-rem');
+      rem.appendChild(mk('span', 'ps-lab', 'Info / remarque   '));
+      rem.appendChild(document.createTextNode(se.remarque));
+      printSheet.appendChild(rem);
+    }
+    // Programme : vue d'ensemble en une ligne
+    const prog = mk('div', 'ps-prog');
+    prog.appendChild(mk('span', 'ps-lab', 'Programme   '));
+    se.items.forEach((it, i) => {
+      if(i) prog.appendChild(mk('span', 'ps-sep', '·'));
+      prog.appendChild(mk('b', '', (i + 1) + '. '));
+      prog.appendChild(document.createTextNode(it.exercise.fiche.nom || 'Sans nom'));
+    });
+    printSheet.appendChild(prog);
+
+    // Un bloc par exercice
+    se.items.forEach((it, i) => {
+      const ex = it.exercise;
+      const block = mk('div', 'ps-block');
+      const head = mk('div', 'ps-bhead');
+      head.appendChild(mk('div', 'ps-num ps-ttl', String(i + 1)));
+      head.appendChild(mk('div', 'ps-bname ps-ttl', ex.fiche.nom || 'Sans nom'));
+      if(ex.fiche.tags && ex.fiche.tags.length) head.appendChild(mk('div', 'ps-tags', ex.fiche.tags.join(' · ')));
+      block.appendChild(head);
+
+      const body = mk('div', 'ps-bbody');
+      const court = mk('div', 'ps-court');
+      const img = document.createElement('img');
+      img.src = renderThumbCached('pr:' + it.uid, it.updatedAt, ex.phases[0].evolutions[0].slot, true);
+      court.appendChild(img);
+      body.appendChild(court);
+
+      const txt = mk('div', 'ps-txt');
+      if(ex.fiche.explication){
+        const e = mk('div');
+        e.appendChild(mk('div', 'ps-lab', 'Explication'));
+        e.appendChild(mk('div', 'ps-expl', ex.fiche.explication));
+        txt.appendChild(e);
+      }
+      const note = ex.phases[0].description;
+      if(note){
+        const n = mk('div');
+        n.appendChild(mk('div', 'ps-lab', 'Note'));
+        n.appendChild(mk('div', 'ps-expl', note));
+        txt.appendChild(n);
+      }
+      // Critère de réussite + résultat (ligne à compléter à la main si vide)
+      const ev = mk('div', 'ps-eval');
+      const crit = mk('div', 'crit');
+      crit.appendChild(mk('div', 'ps-lab', 'Critère de réussite'));
+      crit.appendChild(ex.fiche.reussite ? mk('div', 'val', ex.fiche.reussite) : mk('div', 'val ps-write'));
+      const res = mk('div', 'res');
+      res.appendChild(mk('div', 'ps-lab', 'Résultat'));
+      res.appendChild(it.resultat ? mk('div', 'val', it.resultat) : mk('div', 'val ps-write'));
+      ev.appendChild(crit); ev.appendChild(res);
+      txt.appendChild(ev);
+      body.appendChild(txt);
+      block.appendChild(body);
+      printSheet.appendChild(block);
+    });
+  }
+  function printSeance(id){
+    const se = seCache.get(id || currentSeanceId);
+    if(!se) return;
+    if(!se.items.length){ toast('Ajoute des exercices avant d\'imprimer'); return; }
+    buildPrintSheet(se);   // images déjà en cache : prêtes immédiatement
+    document.body.classList.add('print-seance');
+    document.title = 'Seance_' + se.date + (se.theme ? '_' + slug(se.theme) : '');
+    doPrint();
+  }
+  document.getElementById('sePrint').addEventListener('click', () => printSeance());
+  window.addEventListener('afterprint', () => { document.title = APP_TITLE; });
+
+  // ---------- Init ----------
+  buildToolbar();
+  phases = [ newPhase(1) ]; curPhase = 0; curEvo = 0;
+  renderPhaseTabs(); renderEvoTabs();
+  rebuildCanvasForCurrentSlot(false);
+  updateTitle();
+  setActiveTool('select');
+  showView('library');
+  (async () => {
+    await Store.open();
+    try{ (await Store.all()).forEach(r => libCache.set(r.id, r)); }catch(err){}
+    try{ (await Store.all('sessions')).forEach(r => seCache.set(r.id, r)); }catch(err){}
+    await migrateLegacyDraft();
+    renderLibrary();
+    if(!Store.persistent) toast("Stockage indisponible : la bibliothèque ne sera pas conservée après fermeture");
+  })();
+})();
+</script>
+</body>
+</html>
