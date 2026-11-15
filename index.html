@@ -2,7 +2,14 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Volley">
+<meta name="theme-color" content="#0E141B">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
 <title>Catalogue d'exercices — Volley</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
@@ -35,13 +42,13 @@
   .view.hidden{ display:none; }
   header{
     display:flex; align-items:center; justify-content:space-between;
-    padding: 10px 16px; background: var(--bg-panel); border-bottom: 1px solid #24323D; flex-shrink:0; gap:10px;
+    padding: calc(10px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) 10px calc(16px + env(safe-area-inset-left)); background: var(--bg-panel); border-bottom: 1px solid #24323D; flex-shrink:0; gap:10px;
   }
   .title-wrap{ display:flex; align-items:center; gap:10px; min-width:0; }
   .back-btn{ flex-shrink:0; display:flex; align-items:center; gap:4px; background:transparent; border:1px solid #33465A; color:var(--ink); font-family:'Barlow',sans-serif; font-weight:600; font-size:12px; padding:7px 11px 7px 8px; border-radius:999px; cursor:pointer; }
 
   /* ---------- Bibliothèque ---------- */
-  .lib-top{ flex-shrink:0; background:var(--bg-panel); border-bottom:1px solid #24323D; padding:12px 16px 10px; }
+  .lib-top{ flex-shrink:0; background:var(--bg-panel); border-bottom:1px solid #24323D; padding: calc(12px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) 10px calc(16px + env(safe-area-inset-left)); }
   .lib-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
   .lib-title{ font-family:'Oswald',sans-serif; font-weight:600; font-size:20px; letter-spacing:.03em; text-transform:uppercase; }
   .lib-title small{ font-family:'Barlow',sans-serif; font-size:12px; font-weight:500; color:var(--ink-dim); text-transform:none; letter-spacing:0; margin-left:8px; }
