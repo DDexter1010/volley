@@ -36,8 +36,8 @@
   /* Marge sous la barre d'état de l'iPad quand l'appli est lancée depuis l'écran d'accueil.
      Certains iPad ne la signalent pas (safe-area = 0) : on impose alors un minimum. */
   :root{ --top-inset: env(safe-area-inset-top, 0px); }
-  @media (display-mode: standalone), (display-mode: fullscreen){ :root{ --top-inset: max(env(safe-area-inset-top, 0px), 26px); } }
-  html.standalone{ --top-inset: max(env(safe-area-inset-top, 0px), 26px); }
+  @media (display-mode: standalone), (display-mode: fullscreen){ :root{ --top-inset: calc(max(env(safe-area-inset-top, 0px), 24px) + 14px); } }
+  html.standalone{ --top-inset: calc(max(env(safe-area-inset-top, 0px), 24px) + 14px); }
   input, textarea, select{ user-select:text; -webkit-user-select:text; }
   body{
     background: var(--bg-app); color: var(--ink); font-family:'Barlow', sans-serif;
@@ -86,6 +86,7 @@
   .lib-empty strong{ display:block; color:var(--ink); font-family:'Oswald',sans-serif; font-size:18px; font-weight:600; margin-bottom:6px; text-transform:uppercase; letter-spacing:.02em; }
   .sheet-btn{ display:block; width:100%; text-align:left; font-family:'Barlow',sans-serif; font-weight:600; font-size:15px; padding:12px 14px; border-radius:10px; border:1px solid #2C3D4B; background:var(--bg-panel-2); color:var(--ink); margin-bottom:8px; cursor:pointer; }
   .sheet-btn.danger{ color:var(--danger); }
+  .app-version{ text-align:center; font-size:11px; color:#4E606C; margin-top:28px; }
   .lib-count{ font-size:12.5px; color:var(--ink-dim); font-weight:600; white-space:nowrap; }
   #libraryView .lib-head .pill-toggle button{ font-size:13px; padding:8px 14px; }
   /* ---------- Séance ---------- */
@@ -284,6 +285,7 @@
     <div class="lib-grid" id="libGrid"></div>
     <div class="lib-grid" id="seGrid" style="display:none"></div>
     <div class="lib-empty" id="libEmpty" style="display:none"></div>
+    <div class="app-version" id="appVersion">Version 15/11 · 15h20</div>
   </div>
 </div>
 
